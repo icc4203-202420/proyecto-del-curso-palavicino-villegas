@@ -62,8 +62,7 @@ class API::V1::EventsController < ApplicationController
 
   def event_params
     params.require(:event).permit(
-      :name, :description, :date, :image_base64,
-      event_pictures: [:event_id, :user_id]
+      :name, :description, :date, :image_base64, :bar_id
     )
   end
 
