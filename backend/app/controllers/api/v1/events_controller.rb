@@ -6,7 +6,6 @@ class API::V1::EventsController < ApplicationController
   before_action :set_event, only: [:show, :update, :destroy]
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
-
   def index
     @events = Event.all
     render json: { events: @events }, status: :ok
@@ -62,7 +61,7 @@ class API::V1::EventsController < ApplicationController
 
   def event_params
     params.require(:event).permit(
-      :name, :description, :date, :image_base64, :bar_id
+      :name, :description, :date, :bar_id, :start_date, :end_date, :image_base64
     )
   end
 

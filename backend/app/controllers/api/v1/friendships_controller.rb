@@ -3,6 +3,7 @@ class API::V1::FriendshipsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :set_user
+  before_action :verify_jwt_token
 
   # GET /api/v1/users/:user_id/friendships
   def index
@@ -21,7 +22,6 @@ class API::V1::FriendshipsController < ApplicationController
       return
     end
 
-
     # Si ya son amigos
     if @user.friendships.exists?(friend: friend)
       render json: { error: "Already friends" }, status: :unprocessable_entity
@@ -29,7 +29,7 @@ class API::V1::FriendshipsController < ApplicationController
     end
 
     # Si es una nueva amistad
-    @friendship = @user.friendships.build(friend: friend)
+    @friendship = @user.friendships.build(friendship_params)
 
     if @friendship.save
       render json: @friendship, status: :created, location: api_v1_user_friendship_url(@user, @friendship)
@@ -45,6 +45,6 @@ class API::V1::FriendshipsController < ApplicationController
   end
 
   def friendship_params
-    params.require(:friendship).permit(:friend_id)
+    params.require(:friendship).permit(:id, :friend_id, :bar_id)
   end
 end
