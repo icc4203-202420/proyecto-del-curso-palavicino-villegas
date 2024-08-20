@@ -28,7 +28,7 @@ Rails.application.routes.draw do
       resources :users do
         resources :reviews, only: [:index]
         # Added for 1.1
-        resources :frienships, only: [:index]
+        resources :friendships, only: [:index, :create]
       end
 
       resources :reviews, only: [:index, :show, :create, :update, :destroy]
