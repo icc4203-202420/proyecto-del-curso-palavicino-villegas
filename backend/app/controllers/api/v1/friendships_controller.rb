@@ -1,14 +1,13 @@
 class API::V1::FriendshipsController < ApplicationController
-  # Revisar routes.rb
 
   before_action :authenticate_user!
   before_action :set_user
-  before_action :verify_jwt_token
+  # before_action :verify_jwt_token
 
   # GET /api/v1/users/:user_id/friendships
   def index
-    @friends = User.joins(:friendships).where(friendships: { user_id: @user.id })
-    render json: { friends: @friends }, status: :ok
+    @friendships = Friendship.where(user_id: @user.id)
+    render json: { friends: @friendships }, status: :ok
   end
 
 
@@ -32,7 +31,7 @@ class API::V1::FriendshipsController < ApplicationController
     @friendship = @user.friendships.build(friendship_params)
 
     if @friendship.save
-      render json: @friendship, status: :created, location: api_v1_user_friendship_url(@user, @friendship)
+      render json: @friendship, status: :created
     else
       render json: @friendship.errors, status: :unprocessable_entity
     end
