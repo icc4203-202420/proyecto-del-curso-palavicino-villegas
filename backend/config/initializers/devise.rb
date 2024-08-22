@@ -265,7 +265,7 @@ Devise.setup do |config|
   # The "*/*" below is required to match Internet Explorer requests.
   # config.navigational_formats = ['*/*', :html, :turbo_stream]
   config.navigational_formats = []
-  
+
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
 
@@ -324,6 +324,6 @@ Devise.setup do |config|
     jwt.revocation_requests = [
       ['DELETE', %r{^/logout$}]
     ]
-    jwt.expiration_time = 1.day.to_i
-  end  
+    jwt.expiration_time = 5.day.to_i
+  end
 end
