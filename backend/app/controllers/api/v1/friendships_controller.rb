@@ -1,7 +1,9 @@
 class API::V1::FriendshipsController < ApplicationController
+  include Authenticable
 
   before_action :authenticate_user!
   before_action :set_user
+  before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   # GET /api/v1/users/:user_id/friendships
   def index
