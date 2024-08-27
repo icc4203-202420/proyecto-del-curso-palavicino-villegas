@@ -70,3 +70,5 @@ class API::V1::EventsController < ApplicationController
     @event.image.attach(io: decoded_image[:io], filename: decoded_image[:filename], content_type: decoded_image[:content_type])
   end
 end
+
+#
