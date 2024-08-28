@@ -47,5 +47,3 @@ class API::V1::FriendshipsController < ApplicationController
     params.require(:friendship).permit(:id, :friend_id, :bar_id)
   end
 end
-
-#
