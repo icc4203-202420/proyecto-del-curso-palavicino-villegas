@@ -5,6 +5,7 @@ import pintpalLogo from './assets/pintpal-logo.png';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { format } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import EventsList from './EventsList';
 
 const EventsIndex = () => {
@@ -27,7 +28,7 @@ const EventsIndex = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return format(date, 'MMM d, yyyy h:mm a');
+    return format(date, "EEEE, MMMM dd, yyyy", { locale: enUS });
   };
 
   return (
