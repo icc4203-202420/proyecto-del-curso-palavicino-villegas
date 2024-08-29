@@ -15,7 +15,7 @@ export default function ActionAreaCard() {
   };
 
   return (
-    <Card sx={{ maxWidth: 345 }} onClick={handleClick}>
+    <Card sx={{ maxWidth: 345, boxShadow: 5}} onClick={handleClick}>
       <CardActionArea>
         <CardMedia
           component="img"

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ActionAreaCardBars from './bars/ActionAreaCardBars';
+import BarsHomeCard from './bars/BarsHomeCard';
 import ActionAreaCardBeers from './beers/ActionAreaCardBeers';
 import ActionAreaCardSocial from './social/ActionAreaCardSocial';
 import Navbar from './Navbar';
@@ -16,7 +16,7 @@ function Home() {
       
     {/* Tarjeta que lleva al index de bars (/bars) */}
     <div id='barsHomeCard' style={{ marginTop: '20px', minWidth: '300px', maxWidth: '300px'}}>
-        <ActionAreaCardBars />
+        <BarsHomeCard />
     </div>
 
     {/* Tarjeta que lleva al index de beers (/beers) */}
@@ -24,12 +24,11 @@ function Home() {
         <ActionAreaCardBeers />
     </div>
 
-    {/* Tarjeta que lleva al index de beers (/beers) */}
+    {/* Tarjeta que lleva al index de social (/social) */}
     <div id='socialHomeCard' style={{ marginTop: '20px', minWidth: '300px', maxWidth: '300px'}}>
         <ActionAreaCardSocial />
     </div>
 
-    {/* Bottom Navigation */}
     <div id='navbar' style={{
         position: 'fixed',
         bottom: 0,
@@ -46,7 +45,7 @@ function Home() {
         height:'70px'
     }}>
         <Navbar />
-    </div>
+    </div> */}
 
     </>
   );

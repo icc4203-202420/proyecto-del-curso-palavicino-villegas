@@ -6,9 +6,10 @@ class API::V1::BarsController < ApplicationController
   before_action :set_bar, only: [:show, :update, :destroy]
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
+  # Se modifico el controlador levemente para poder acceder a las addresses directamente con el GET de bars
   def index
-    @bars = Bar.all
-    render json: { bars: @bars }, status: :ok
+    @bars = Bar.includes(:address).all
+    render json: @bars.as_json(include: :address), status: :ok
   end
 
   def show
