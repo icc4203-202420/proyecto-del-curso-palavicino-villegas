@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ActionAreaCardBars from './bars/ActionAreaCardBars';
 import ActionAreaCardBeers from './beers/ActionAreaCardBeers';
+import ActionAreaCardSocial from './social/ActionAreaCardSocial';
 import Navbar from './Navbar';
 import pintpalLogo from '../assets/pintpal-logo.png';
 
@@ -21,6 +22,11 @@ function Home() {
     {/* Tarjeta que lleva al index de beers (/beers) */}
     <div id='beersHomeCard' style={{ marginTop: '20px', minWidth: '300px', maxWidth: '300px'}}>
         <ActionAreaCardBeers />
+    </div>
+
+    {/* Tarjeta que lleva al index de beers (/beers) */}
+    <div id='socialHomeCard' style={{ marginTop: '20px', minWidth: '300px', maxWidth: '300px'}}>
+        <ActionAreaCardSocial />
     </div>
 
     {/* Bottom Navigation */}
