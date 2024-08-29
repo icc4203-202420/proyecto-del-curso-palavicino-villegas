@@ -74,7 +74,8 @@ function BarsIndex() {
       </div>
 
       <div>
-        {filteredBars.map(bar => (
+      {filteredBars.length > 0 ? (
+        filteredBars.map(bar => (
           <BarContainer key={bar.id}>
             <Link to={`/bars/${bar.id}/events`} style={{ textDecoration: 'none' }}>
               <BarName variant="h6" component="h2">
@@ -87,7 +88,13 @@ function BarsIndex() {
               </BarAddress>
             </Link>
           </BarContainer>
-        ))}
+        ))
+      ) : (
+        <Typography variant="body1" style={{ marginTop: 10, color: 'gray' }}>
+          No bars found.
+        </Typography>
+      )}
+
       </div>
     </>
   );
