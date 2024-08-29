@@ -5,7 +5,7 @@ import BarsIndex from './components/bars/BarsIndex';
 
 function App() {
   return (
-
+    
 
 
 
