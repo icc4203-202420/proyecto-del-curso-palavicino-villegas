@@ -23,17 +23,6 @@ function Home() {
         <ActionAreaCardBeers />
     </div>
 
-        
-    {/* --------- Para probar scroll --------- */}
-    <div id='beersHomeCard' style={{ marginTop: '20px', minWidth: '300px', maxWidth: '300px'}}>
-        <ActionAreaCardBeers />
-    </div>
-
-    {/* --------- Para probar scroll --------- */}
-    <div id='beersHomeCard' style={{ marginTop: '20px', minWidth: '300px', maxWidth: '300px'}}>
-        <ActionAreaCardBeers />
-    </div>
-
     {/* Bottom Navigation */}
     <div id='navbar' style={{
         position: 'fixed',
