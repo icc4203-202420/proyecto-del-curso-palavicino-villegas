@@ -23,7 +23,7 @@ const EventsIndex = () => {
   }, [id]);
 
   const handleBackClick = () => {
-    window.history.back();
+    window.history.back('/bars');
   };
 
   const formatDate = (dateString) => {
