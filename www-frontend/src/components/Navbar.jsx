@@ -33,9 +33,9 @@ export default function SimpleBottomNavigation() {
             case 2:
               handleNavigation('/bars'); // En caso de apretar el LocationOnIcon
               break;
-            // case 3:
-            //   handleNavigation('/social'); // En caso de apretar el GroupIcon
-            //   break;
+            case 3:
+              handleNavigation('/social'); // En caso de apretar el GroupIcon
+              break;
             default:
               break;
           }
