@@ -35,8 +35,9 @@ class API::V1::UsersController < ApplicationController
   end
 
   def user_params
+    # El user_params original no tenia un permit(:handle y :password), se agregaron esos dos campos.
     params.fetch(:user, {}).
-        permit(:id, :first_name, :last_name, :email, :age,
+        permit(:id, :first_name, :last_name, :email, :age, :handle, :password,
             { address_attributes: [:id, :line1, :line2, :city, :country, :country_id,
               country_attributes: [:id, :name]],
               reviews_attributes: [:id, :text, :rating, :beer_id, :_destroy]
