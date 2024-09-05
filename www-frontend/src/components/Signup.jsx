@@ -31,9 +31,9 @@ const initialValues = {
   email: '',
   handle: '',
   password: '',
-  line1: '',
-  line2: '',
-  city: '',
+  // line1: '',
+  // line2: '',
+  // city: '',
 };
 
 export default function Signup() {
@@ -41,13 +41,23 @@ export default function Signup() {
   const navigate = useNavigate();
 
   const handleSubmit = (values) => {
-    axios
-      .post('http://localhost:3001/api/v1/signup', { user: values })
+    axios.post('http://localhost:3001/api/v1/signup', { user: values })
       .then((response) => {
+        const JWT_TOKEN = response.headers['authorization'];
         console.log('User registered successfully:', response.data);
+  
+        if (JWT_TOKEN) {
+          localStorage.setItem('JWT_TOKEN', JWT_TOKEN);
+          console.log(JWT_TOKEN);
+        }
+        
         navigate('/login');
+      })
+      .catch((error) => {
+        console.error('Error during signup:', error);
       });
   };
+  
 
   return (
     <Container maxWidth="xs">
@@ -147,10 +157,10 @@ export default function Signup() {
                   ),
                 }}
               />
-              <Typography variant="subtitle1" align="left" gutterBottom sx={{color: 'grey', marginTop:5 }}>
+              {/* <Typography variant="subtitle1" align="left" gutterBottom sx={{color: 'grey', marginTop:5 }}>
                 Optional Adress Details
-              </Typography>
-              <Field
+              </Typography> */}
+              {/* <Field
                 as={TextField}
                 name="line1"
                 label="Line 1"
@@ -160,8 +170,8 @@ export default function Signup() {
                   boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                   borderRadius: '5px',
                 }}
-              />
-              <Field
+              /> */}
+              {/* <Field
                 as={TextField}
                 name="line2"
                 label="Line 2"
@@ -171,8 +181,8 @@ export default function Signup() {
                   boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                   borderRadius: '5px',
                 }}
-              />
-              <Field
+              /> */}
+              {/* <Field
                 as={TextField}
                 name="city"
                 label="City"
@@ -182,7 +192,7 @@ export default function Signup() {
                   boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                   borderRadius: '5px',
                 }}
-              />
+              /> */}
               <Box mt={2} sx={{marginTop:5}}>
                 <Button
                   type="submit"

@@ -7,7 +7,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import pintpalLogo from '../assets/pintpal-logo.png';
 
-
 const fieldsValidation = Yup.object({
   email: Yup.string().email('Email no válido.').required('El email es requerido.'),
   password: Yup.string().required('La contraseña es requerida'),
@@ -22,14 +21,23 @@ export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (values, actions) => {
+  const handleSubmit = (values) => {
     axios.post('http://localhost:3001/api/v1/login', { user: values })
       .then(response => {
-        console.log('User logged in successfully:', response.data);
-        navigate('/'); // Ir al home después de logearse
+        const JWT_TOKEN = response.headers['authorization'];
+        console.log(JWT_TOKEN);
+  
+        if (JWT_TOKEN) {
+          localStorage.setItem('JWT_TOKEN', JWT_TOKEN);
+          console.log(JWT_TOKEN);
+        }
+        navigate('/');
+      })
+      .catch(error => {
+        console.error('Error logging in:', error);
       });
   };
-
+  
   return (
     <Container maxWidth="xs">
       <Box mt={5}>
