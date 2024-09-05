@@ -19,7 +19,7 @@ const BeersList = ({ beers }) => {
                     <Typography component="span" variant="body2" sx={{ color: 'text.primary', display: 'inline' }}>
                       {beers.beer_type} - {beers.style}
                     </Typography>
-                    {" — "}Alcohol: {beers.alcohol} 
+                    {" — "}Alcohol: {beers.alcohol} {' '}
                     {beers.ibu} | Rating: {beers.avg_rating || "N/A"}
                   </>
                 }

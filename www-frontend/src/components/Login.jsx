@@ -29,7 +29,7 @@ export default function Login() {
   
         if (JWT_TOKEN) {
           localStorage.setItem('JWT_TOKEN', JWT_TOKEN);
-          console.log(JWT_TOKEN);
+          console.log(localStorage.getItem('JWT_TOKEN'));
         }
         navigate('/');
       })

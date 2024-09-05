@@ -15,7 +15,7 @@ export default function SocialIndex() {
     <>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '20px', marginBottom: '20px' }}>
         <IconButton onClick={handleBackClick}>
-          <ArrowBackIosIcon sx={{ color: 'black', fontSize: '2rem', marginLeft: '-5rem' }} />
+          <ArrowBackIosIcon sx={{ color: 'black', fontSize: '1.5rem', marginLeft: '-5rem' }} />
         </IconButton>
         <h2 style={{ margin: 0, color: 'black', fontSize: '2rem', fontWeight: 500 }}>PintPal</h2>
         <img src={pintpalLogo} alt="PintPal Logo" style={{ width: '50px', height: '50px' }} />

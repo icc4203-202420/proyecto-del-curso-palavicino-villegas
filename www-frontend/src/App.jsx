@@ -8,6 +8,7 @@ import BeersIndex from './components/beers/BeersIndex';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import Logout from './components/Logout';
+import BeersShow from './components/beers/BeersShow';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/bars" element={<BarsIndex />} />
+        <Route path="/beers/:id" element={<BeersShow />} />
         <Route path="/social" element={<SocialIndex />} />
         <Route path="/bars/:id/events" element={<EventsIndex />} />
         <Route path="/beers" element={<BeersIndex />} />
