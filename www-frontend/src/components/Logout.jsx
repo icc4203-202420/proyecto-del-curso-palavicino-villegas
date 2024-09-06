@@ -8,12 +8,12 @@ export default function Logout() {
 
   const handleLogout = () => {
     const JWT_TOKEN = localStorage.getItem('JWT_TOKEN');
-  
+    console.log(JWT_TOKEN);
     axios.delete(
-      'http://localhost:3001/api/v1/logout', {},
+      'http://localhost:3001/api/v1/logout', 
       {
         headers: {
-          Authorization: {JWT_TOKEN},
+          Authorization: `${JWT_TOKEN}`, 
         }
       }
     )
@@ -23,12 +23,10 @@ export default function Logout() {
       navigate('/signup'); 
     })
     .catch(error => {
-        console.log(JWT_TOKEN);
-    
-        console.error('Error logging out:', error);
+      console.log(JWT_TOKEN);
+      console.error('Error logging out:', error);
     });
   };
-  
 
   return (
     <Container maxWidth="xs">
