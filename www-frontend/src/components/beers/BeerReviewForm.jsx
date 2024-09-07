@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, Slider} from "@mui/material";
 
 const reviewValidation = Yup.object({
   rating: Yup.number()
@@ -44,16 +44,27 @@ const BeerReviewForm = ({ beer, open, onClose, onSubmit }) => {
                 error={touched.text && Boolean(errors.text)}
                 helperText={touched.text && errors.text}
               />
-              <Field
-                as={TextField}
-                fullWidth
-                id="rating"
-                name="rating"
-                label="Rating"
-                type="number"
-                error={touched.rating && Boolean(errors.rating)}
-                helperText={touched.rating && errors.rating}
-              />
+              <div style={{ marginTop: '20px', marginBottom: '10px' }}>
+                <label htmlFor="rating">Rating</label>
+                <Field name="rating">
+                  {({ field, form }) => (
+                    <Slider
+                      {...field}
+                      value={form.values.rating}
+                      onChange={(_, value) => form.setFieldValue('rating', value)}
+                      aria-labelledby="rating"
+                      valueLabelDisplay="auto"
+                      step={0.1}
+                      marks
+                      min={1}
+                      max={5}
+                    />
+                  )}
+                </Field>
+                {touched.rating && errors.rating && (
+                  <div style={{ color: 'red', fontSize: '12px' }}>{errors.rating}</div>
+                )}
+              </div>
             </DialogContent>
             <DialogActions>
               <Button onClick={onClose} color="primary">
