@@ -25,8 +25,8 @@ Rails.application.routes.draw do
         resources :events
       end
 
-      resources :beers do 
-        resources :reviews, only: [:index, :create]
+      resources :beers do
+        resources :reviews, only: [:index, :create, :show]
       end
       resources :users do
         resources :reviews, only: [:index]

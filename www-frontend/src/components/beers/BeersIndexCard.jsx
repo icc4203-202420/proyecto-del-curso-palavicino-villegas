@@ -20,7 +20,7 @@ const BeersList = ({ beers }) => {
                       {beers.beer_type} - {beers.style}
                     </Typography>
                     {" — "}Alcohol: {beers.alcohol} {' '}
-                    {beers.ibu} | Rating: {beers.avg_rating || "N/A"}
+                    {beers.ibu} | Rating: {parseFloat(beers.avg_rating).toFixed(2) || "N/A"}
                   </>
                 }
               />

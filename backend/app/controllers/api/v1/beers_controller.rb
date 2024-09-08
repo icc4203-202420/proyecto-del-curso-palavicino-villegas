@@ -25,11 +25,13 @@ class API::V1::BeersController < ApplicationController
     @beer = Beer.includes(brand: :brewery).find(params[:id])
     @brewery = @beer.brand.brewery
     @bars = BarsBeer.where(beer_id: @beer.id).includes(:bar)
+    @reviews = @beer.reviews
 
     beer_data = @beer.as_json.merge({
       brand_name: @beer.brand.name,
       brewery_name: @brewery.name,
-      bar_names: @bars.map { |bars_beer| bars_beer.bar.name }
+      bar_names: @bars.map { |bars_beer| bars_beer.bar.name },
+      reviews: @reviews.as_json(only: [:id, :text, :rating, :user_id])
     })
 
     if @beer.image.attached?

@@ -13,8 +13,14 @@ class API::V1::ReviewsController < ApplicationController
     else
       @reviews = Review.all
     end
-    render json: { reviews: @reviews }, status: :ok
+
+    render json: {
+      reviews: @reviews.as_json(include: {
+        user: { only: [:handle, :email] }
+      })
+    }, status: :ok
   end
+
 
   def show
     if @review
@@ -54,14 +60,14 @@ class API::V1::ReviewsController < ApplicationController
   end
 
   def set_user
-    @user = User.find(params[:user_id]) 
+    @user = User.find(params[:user_id])
   end
 
   def set_beer
     @beer = Beer.find_by(id: params[:beer_id])
     render json: { error: "Beer not found" }, status: :not_found unless @beer
   end
-  
+
   def review_params
     params.require(:review).permit(:id, :text, :rating, :beer_id)
   end

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { TextField, Button, Box, Container, Typography, InputAdornment, IconButton } from '@mui/material';
+import { TextField, Button, Box, Container, Typography, InputAdornment, IconButton, Snackbar, Alert } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -19,22 +19,30 @@ const initialValues = {
 
 export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = (values) => {
     axios.post('http://localhost:3001/api/v1/login', { user: values })
       .then(response => {
         const JWT_TOKEN = response.headers['authorization'];
-        console.log(JWT_TOKEN);
-  
+        const CURRENT_USER_ID = response.data.status.data.user.id;
+
         if (JWT_TOKEN) {
           localStorage.setItem('JWT_TOKEN', JWT_TOKEN);
-          console.log(localStorage.getItem('JWT_TOKEN'));
         }
+
+        if (CURRENT_USER_ID) {
+          localStorage.setItem('CURRENT_USER_ID', CURRENT_USER_ID);
+        }
+
         navigate('/');
       })
       .catch(error => {
         console.error('Error logging in:', error);
+        setSnackbarMessage('Error de inicio de sesión. Verifica tus credenciales.');
+        setOpenSnackbar(true);
       });
   };
   
@@ -45,12 +53,10 @@ export default function Login() {
           Sign In
         </Typography>
 
-
         <div style={{ display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '20px', marginBottom:'20px' }}>
           <img src={pintpalLogo} alt="PintPal Logo" style={{ width: '100px', height: '100px' }} />
           <h2 style={{ margin: 0, color: 'black', fontSize: '2.2rem', fontWeight: 500 }}>PintPal</h2>
         </div>
-
 
         <Formik
           initialValues={initialValues}
@@ -124,6 +130,16 @@ export default function Login() {
             </Form>
           )}
         </Formik>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={4000}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          <Alert onClose={() => setOpenSnackbar(false)} severity="error">
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Box>
     </Container>
   );

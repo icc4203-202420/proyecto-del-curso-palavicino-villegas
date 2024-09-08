@@ -44,11 +44,14 @@ export default function Signup() {
     axios.post('http://localhost:3001/api/v1/signup', { user: values })
       .then((response) => {
         const JWT_TOKEN = response.headers['authorization'];
-        console.log('User registered successfully:', response.data);
-  
+        const CURRENT_USER_ID = response.data.data.id;
+
         if (JWT_TOKEN) {
           localStorage.setItem('JWT_TOKEN', JWT_TOKEN);
-          console.log(JWT_TOKEN);
+        }
+
+        if (CURRENT_USER_ID) {
+          localStorage.setItem('CURRENT_USER_ID', CURRENT_USER_ID);
         }
         
         navigate('/login');
