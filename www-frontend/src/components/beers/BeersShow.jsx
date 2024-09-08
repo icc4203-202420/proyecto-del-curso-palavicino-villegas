@@ -1,27 +1,62 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardMedia, Typography, Box, Rating } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Box, Rating, Dialog, Button } from '@mui/material';
 import beersHomeImage from './assets/home.png'; 
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import SearchBar from '../SearchBar';
+import BeerReviewForm from "./BeerReviewForm";
 
 export default function BeersShow() {
 
     const { id } = useParams();
     const [beer, setBeer] = useState(null);
+    const [beerReviews, setBeerReviews] = useState([]);
+    const [openReviewForm, setOpenReviewForm] = useState(false);
+    const [reviewSubmitMessage, setReviewSubmitMessage] = useState("");
 
     const handleBackClick = () => {
         window.history.back();
+    };
+
+    const handleReviewSubmit = (values) => {
+        const review = {
+            text: values.text,
+            rating: values.rating,
+            beer_id: beer.id,
+        };
+
+        const userId = 1; // Poner user actual
+
+        axios.post(`http://localhost:3001/api/v1/reviews`, { review, user_id: userId })
+            .then((response) => {
+                setReviewSubmitMessage("Review submitted successfully");
+                fetchReviews(); 
+            });
+    };
+
+    const fetchReviews = () => {
+        axios.get(`http://localhost:3001/api/v1/beers/${id}/reviews`)
+            .then(response => {
+                setBeerReviews(response.data.reviews);
+            });
     };
 
     useEffect(() => {
         axios.get(`http://localhost:3001/api/v1/beers/${id}`)
         .then(response => {
             setBeer(response.data.beer);
+            fetchReviews();
         });
     }, [id]);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setReviewSubmitMessage("");
+        }, 3000);
+        return () => clearTimeout(timeout);
+    }, [reviewSubmitMessage]);
 
     if (!beer) return <div>Loading...</div>;
 
@@ -64,6 +99,10 @@ export default function BeersShow() {
             </Typography>
             </Box>
 
+            <Button onClick={() => setOpenReviewForm(true)} color="primary" sx={{ marginTop: '20px' }}>
+                Write a Review
+            </Button>
+
             <Typography variant="body1" sx={{marginTop:2}}>
                 {beer.bar_names && beer.bar_names.length > 0 ? (
                     <ul>
@@ -78,6 +117,21 @@ export default function BeersShow() {
             </Typography>
         </CardContent>
         </Card>
+
+        <Dialog open={openReviewForm} onClose={() => setOpenReviewForm(false)}>
+            <BeerReviewForm
+                beer={beer}
+                open={openReviewForm}
+                onClose={() => setOpenReviewForm(false)}
+                onSubmit={handleReviewSubmit}
+            />
+        </Dialog>
+
+        {reviewSubmitMessage && (
+            <Typography variant="body2" color="primary" align="center" sx={{ marginTop: '20px' }}>
+                {reviewSubmitMessage}
+            </Typography>
+        )}
         </>
     );
 }
