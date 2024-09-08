@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardMedia, Typography, Box, Rating, Dialog, Button, Snackbar, Alert, CircularProgress, Pagination } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Box, Rating, Dialog, Button, Snackbar, Alert, CircularProgress, Pagination, Divider } from '@mui/material'; // Import Divider
 import beersHomeImage from './assets/home.png'; 
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -171,10 +171,14 @@ export default function BeersShow() {
                     </Typography>
                 </CardContent>
                 <Box sx={{ maxWidth: 600, margin: 'auto'}}>        
-                    <Button onClick={() => setOpenReviewForm(true)} color="primary" sx={{ marginTop: '20px' }}>
-                        Write a Review
-                    </Button>
-                    
+                    <Divider sx={{ marginTop: '10px', marginBottom: '15px', marginX: '20px' }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
+                        <Typography variant="h6" sx={{  marginLeft: '10px', fontWeight: 'bold' }}>Reviews</Typography>
+                        <Button onClick={() => setOpenReviewForm(true)} color="primary" sx={{ fontSize: '0.8rem', marginRight: '10px' }}>
+                            Write a Review
+                        </Button>
+                    </Box>
+
                     {state.loading ? (
                         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                             <CircularProgress />
@@ -200,7 +204,7 @@ export default function BeersShow() {
                             </Box>
                         </>
                     ) : (
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', justifyContent: 'center', marginTop: '10px', marginBottom: '40px' }}>
                             No reviews found.
                         </Typography>
                     )}
