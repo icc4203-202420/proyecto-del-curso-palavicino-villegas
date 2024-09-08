@@ -9,6 +9,12 @@ import SearchBar from '../SearchBar';
 import BeerReviewForm from "./BeerReviewForm";
 import BeerReviewCard from './BeerReviewCard';
 
+function userReviewsFirst(reviews, currentUserId) {
+    const userReviews = reviews.filter(review => review.user_id === parseInt(currentUserId));
+    const otherReviews = reviews.filter(review => review.user_id !== parseInt(currentUserId));
+    return [...userReviews, ...otherReviews];
+}
+
 // Para el useReducer()
 const initialState = {
     reviews: [],
@@ -21,9 +27,10 @@ const initialState = {
 function reducer(state, action) {
     switch (action.type) {
         case 'FETCH_REVIEWS_SUCCESS':
+            const orderedReviews = userReviewsFirst(action.payload.reviews, action.payload.currentUserId);
             return {
                 ...state,
-                reviews: action.payload.reviews,
+                reviews: orderedReviews,
                 loading: false,
                 totalPages: action.payload.totalPages
             };
@@ -82,9 +89,14 @@ export default function BeersShow() {
 
         axios.get(`http://localhost:3001/api/v1/beers/${id}/reviews?page=${page}`)
             .then(response => {
+                const currentUserId = localStorage.getItem('CURRENT_USER_ID');
                 dispatch({ 
                     type: 'FETCH_REVIEWS_SUCCESS',
-                    payload: { reviews: response.data.reviews, totalPages: response.data.total_pages }
+                    payload: { 
+                        reviews: response.data.reviews, 
+                        totalPages: response.data.total_pages,
+                        currentUserId: currentUserId 
+                    }
                 });
             })
             .catch(error => {
