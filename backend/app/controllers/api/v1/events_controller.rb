@@ -15,18 +15,23 @@ class API::V1::EventsController < ApplicationController
   def show
     if @event.flyer.attached?
       render json: @event.as_json(
-        include: { bar: { only: :name } }
+        include: {
+          bar: { only: :name },
+          users: { only: [:id, :first_name, :last_name, :email] } # Incluye los atributos deseados de los usuarios
+        }
       ).merge({
         flyer_url: url_for(@event.flyer),
         thumbnail_url: url_for(@event.thumbnail)
       }), status: :ok
     else
       render json: @event.as_json(
-        include: { bar: { only: :name } }
+        include: {
+          bar: { only: :name },
+          users: { only: [:id, :first_name, :last_name, :email] }
+        }
       ), status: :ok
     end
   end
-
 
   def create
     @event = Event.new(event_params.except(:flyer_base64)) # Cambiado a flyer_base64

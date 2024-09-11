@@ -8,6 +8,8 @@ import BarsShow from './components/bars/BarsShow';
 
 import EventsShow from './components/events/EventsShow';
 import EventsIndex from './components/events/EventsIndex';
+import EventsUsers from './components/events/EventsUsers';
+
 
 import SocialIndex from './components/social/SocialIndex';
 import BeersIndex from './components/beers/BeersIndex';
@@ -35,6 +37,7 @@ function App() {
         <Route path="/bars/discover" element={<CheckAuthentication element={BarsDiscover} />} />
         <Route path="/bars/:id" element={<CheckAuthentication element={BarsShow} />} />
         <Route path="/events/:id" element={<CheckAuthentication element={EventsShow} />} />
+        <Route path="/events/:id/users" element={<CheckAuthentication element={EventsUsers} />} />
 
         <Route path="/beers/:id" element={<CheckAuthentication element={BeersShow} />} />
         <Route path="/social" element={<CheckAuthentication element={SocialIndex} />} />
