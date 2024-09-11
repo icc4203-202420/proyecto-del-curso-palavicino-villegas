@@ -11,7 +11,7 @@ export default function ActionAreaCard() {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate('/bars');
+    navigate('/bars/discover');
   };
 
   return (

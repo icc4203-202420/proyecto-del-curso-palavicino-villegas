@@ -77,12 +77,12 @@ function BarsIndex() {
       {filteredBars.length > 0 ? (
         filteredBars.map(bar => (
           <BarContainer key={bar.id}>
-            <Link to={`/bars/${bar.id}/events`} style={{ textDecoration: 'none' }}>
+            <Link to={`/bars/${bar.id}`} style={{ textDecoration: 'none' }}>
               <BarName variant="h6" component="h2">
                 {bar.name}
               </BarName>
             </Link>
-            <Link to={`/bars/${bar.id}/events`} style={{ textDecoration: 'none' }}>
+            <Link to={`/bars/${bar.id}`} style={{ textDecoration: 'none' }}>
               <BarAddress variant="subtitle1">
                 {bar.address.line1}, {bar.address.city}
               </BarAddress>
