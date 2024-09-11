@@ -32,7 +32,7 @@ export default function EventsUsers() {
                     </Avatar>
                     <CardContent>
                         <Typography variant="h6">{`${user.first_name} ${user.last_name}`}</Typography>
-                        <Typography variant="body2" color="textSecondary">{user.email}</Typography>
+                        <Typography variant="body2" color="textSecondary">{user.handle}</Typography>
                     </CardContent>
                 </Card>
             ))}

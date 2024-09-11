@@ -17,7 +17,7 @@ class API::V1::EventsController < ApplicationController
       render json: @event.as_json(
         include: {
           bar: { only: :name },
-          users: { only: [:id, :first_name, :last_name, :email] } # Incluye los atributos deseados de los usuarios
+          users: { only: [:id, :first_name, :last_name, :email, :handle] }
         }
       ).merge({
         flyer_url: url_for(@event.flyer),
@@ -27,7 +27,7 @@ class API::V1::EventsController < ApplicationController
       render json: @event.as_json(
         include: {
           bar: { only: :name },
-          users: { only: [:id, :first_name, :last_name, :email] }
+          users: { only: [:id, :first_name, :last_name, :email, :handle] }
         }
       ), status: :ok
     end
