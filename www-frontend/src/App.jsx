@@ -5,11 +5,11 @@ import Home from './components/Home';
 import BarsIndex from './components/bars/BarsIndex';
 import BarsDiscover from './components/bars/BarsDiscover';
 import BarsShow from './components/bars/BarsShow';
+import BarsMap from './components/bars/BarsMap';
 
 import EventsShow from './components/events/EventsShow';
 import EventsIndex from './components/events/EventsIndex';
 import EventsUsers from './components/events/EventsUsers';
-
 
 import SocialIndex from './components/social/SocialIndex';
 import BeersIndex from './components/beers/BeersIndex';
@@ -35,6 +35,7 @@ function App() {
         {/* Protected routes to JWT_TOKEN presence */}
         <Route path="/bars" element={<CheckAuthentication element={BarsIndex} />} />
         <Route path="/bars/discover" element={<CheckAuthentication element={BarsDiscover} />} />
+        <Route path="/bars/locations" element={<CheckAuthentication element={BarsMap} />} />
         <Route path="/bars/:id" element={<CheckAuthentication element={BarsShow} />} />
         <Route path="/events/:id" element={<CheckAuthentication element={EventsShow} />} />
         <Route path="/events/:id/users" element={<CheckAuthentication element={EventsUsers} />} />
