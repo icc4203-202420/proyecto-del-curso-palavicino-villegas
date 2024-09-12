@@ -83,13 +83,13 @@ export default function BarsMap() {
                 <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
 
-        <APIProvider apiKey={'AIzaSyA7marrFD9AqENVCSbEa2o8amUoM97BeCQ'}>
+        <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
             <div style={{ height: '100vh', width: '100%', borderRadius:10 }}>
                 
                 <Map 
                     defaultZoom={9}
                     defaultCenter={position}
-                    mapId={'bf10cc4d2b932ba6'}
+                    mapId={import.meta.env.VITE_GOOGLE_MAPS_MAP_ID}
                     sx={{borderRadius:'10px'}}
                 >
                 {filteredBars.map(bar => (
