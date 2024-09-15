@@ -1,14 +1,24 @@
 class API::V1::FriendshipsController < ApplicationController
   include Authenticable
 
-  before_action :authenticate_user!
+  before_action :authenticate_user!, only: [:create]
   before_action :set_user
   before_action :verify_jwt_token, only: [:create]
 
   # GET /api/v1/users/:user_id/friendships
   def index
-    @friendships = Friendship.where(user_id: @user.id)
-    render json: { friends: @friendships }, status: :ok
+    @friendships = Friendship.includes(:friend).where(user_id: @user.id)
+
+    friends_data = @friendships.map do |friendship|
+      {
+        id: friendship.friend.id,
+        name: "#{friendship.friend.first_name} #{friendship.friend.last_name}",
+        email: friendship.friend.email,
+        handle: friendship.friend.handle
+      }
+    end
+
+    render json: { friends: friends_data }, status: :ok
   end
 
   # POST /api/v1/users/:user_id/friendships

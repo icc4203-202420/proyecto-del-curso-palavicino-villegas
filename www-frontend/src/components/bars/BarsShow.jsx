@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { IconButton, CircularProgress, Typography, Divider, Box, Card, CardContent } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -10,9 +10,10 @@ import BarImage from './assets/bar-image.png';
 export default function BarsShow() {
     const { id } = useParams();
     const [bar, setBar] = useState(undefined);
+    const navigate = useNavigate();
 
     const handleBackClick = () => {
-        window.history.back();
+        navigate('/bars/discover');
     };
 
     useEffect(() => {
