@@ -16,7 +16,14 @@ class API::V1::EventsController < ApplicationController
     if @event.flyer.attached?
       render json: @event.as_json(
         include: {
-          bar: { only: :name },
+          bar: {
+            only: :name,
+            include: {
+              address: {
+                only: [:line1, :line2, :city]
+              }
+            }
+          },
           users: { only: [:id, :first_name, :last_name, :email, :handle] }
         }
       ).merge({
@@ -26,7 +33,14 @@ class API::V1::EventsController < ApplicationController
     else
       render json: @event.as_json(
         include: {
-          bar: { only: :name },
+          bar: {
+            only: :name,
+            include: {
+              address: {
+                only: [:line1, :line2, :city]
+              }
+            }
+          },
           users: { only: [:id, :first_name, :last_name, :email, :handle] }
         }
       ), status: :ok

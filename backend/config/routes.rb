@@ -36,7 +36,11 @@ Rails.application.routes.draw do
 
       resources :reviews, only: [:index, :show, :create, :update, :destroy]
       resources :countries, only: [:index]
-      resources :events
+      resources :events do
+        resources :event_pictures, only: [:new, :create]
+      end
+
+      resources :event_pictures, only: [:new, :create]
       resources :attendances
     end
   end

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
-import { IconButton, CircularProgress, Typography, Box, Card, CardMedia, CardContent, AvatarGroup, Avatar, Button, Snackbar, Alert } from '@mui/material';
+import { IconButton, CircularProgress, Typography, Box, Card, CardMedia, CardContent, AvatarGroup, Avatar, Button, Snackbar, Alert, Divider } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AddIcon from '@mui/icons-material/Add'; 
 import EventImage from './assets/event-image.png';
 
 export default function EventsShow() {
@@ -50,12 +51,12 @@ export default function EventsShow() {
                 setEvent(response.data);
                 setUsers(response.data.users);
             });
-    }, [id]);
-
-    if (!event) {
-        return <CircularProgress />;
-    }
-
+        }, [id]);
+        
+        if (!event) {
+            return <CircularProgress />;
+        }
+        
     return (
         <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -138,6 +139,7 @@ export default function EventsShow() {
                     {users.length - 2} others
                 </Typography>   
                 
+                {/* ------- About Event ------- */}
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black', marginTop: '20px' }}>
                     About Event
                 </Typography>
@@ -145,6 +147,38 @@ export default function EventsShow() {
                 <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: '5px' }}>
                     {event.description}
                 </Typography>
+                {/* ------- About Event ------- */}
+
+                <Divider sx={{marginTop: '20px', marginBottom: '10px'}}/>
+
+                {/* ------- Location ------- */}
+                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black', marginTop: '20px' }}>
+                    Location
+                </Typography>
+            
+                <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: '5px' }}>
+                    {event.bar.address.line1} <br/>
+                    {event.bar.address.line2}, {event.bar.address.city}
+                </Typography>
+                {/* ------- Location ------- */}
+
+                <Divider sx={{marginTop: '20px', marginBottom: '10px'}}/>
+
+                {/* ------- Photos ------- */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black', marginTop: '20px' }}>
+                        Photos
+                    </Typography>
+
+                    <Link to={`/events_pictures/new/event_id=${id}`} style={{ textDecoration: 'none' }}>
+                        <IconButton sx={{ color: 'black', marginTop: '10px' }}>
+                            <AddIcon />
+                        </IconButton>
+                    </Link>
+                </div>
+                {/* ------- Photos ------- */}
+
+
             </div>
 
             {/* Snackbar para éxito y error */}
