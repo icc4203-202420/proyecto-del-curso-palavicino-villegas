@@ -13,6 +13,8 @@ import EventsUsers from './components/events/EventsUsers';
 import EventPictureForm from './components/events/EventPictureForm';
 
 import SocialIndex from './components/social/SocialIndex';
+import SocialShow from './components/social/SocialShow';
+
 import BeersIndex from './components/beers/BeersIndex';
 import Signup from './components/Signup';
 import Login from './components/Login';
@@ -44,6 +46,8 @@ function App() {
 
         <Route path="/beers/:id" element={<CheckAuthentication element={BeersShow} />} />
         <Route path="/social" element={<CheckAuthentication element={SocialIndex} />} />
+        <Route path="/users/:id" element={<CheckAuthentication element={SocialShow} />} />
+
         <Route path="/bars/:id/events" element={<CheckAuthentication element={EventsIndex} />} />
         <Route path="/beers" element={<CheckAuthentication element={BeersIndex} />} />
       </Routes>

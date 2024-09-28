@@ -54,7 +54,7 @@ function BarsIndex() {
   );
 
   const handleBackClick = () => {
-    window.history.back();
+    navigate("/");
   };
 
   return (
