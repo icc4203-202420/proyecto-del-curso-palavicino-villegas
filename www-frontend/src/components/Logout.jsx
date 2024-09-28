@@ -20,6 +20,7 @@ export default function Logout() {
     .then(response => {
       console.log('User logged out successfully:', response.data);
       localStorage.removeItem('JWT_TOKEN');
+      localStorage.removeItem('CURRENT_USER_ID');
       navigate('/login'); 
     })
     .catch(error => {

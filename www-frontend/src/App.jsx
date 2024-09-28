@@ -10,6 +10,7 @@ import BarsMap from './components/bars/BarsMap';
 import EventsShow from './components/events/EventsShow';
 import EventsIndex from './components/events/EventsIndex';
 import EventsUsers from './components/events/EventsUsers';
+import EventPictureForm from './components/events/EventPictureForm';
 
 import SocialIndex from './components/social/SocialIndex';
 import BeersIndex from './components/beers/BeersIndex';
@@ -39,6 +40,7 @@ function App() {
         <Route path="/bars/:id" element={<CheckAuthentication element={BarsShow} />} />
         <Route path="/events/:id" element={<CheckAuthentication element={EventsShow} />} />
         <Route path="/events/:id/users" element={<CheckAuthentication element={EventsUsers} />} />
+        <Route path="/events_pictures/new/event_id/:id" element={<CheckAuthentication element={EventPictureForm} />} />
 
         <Route path="/beers/:id" element={<CheckAuthentication element={BeersShow} />} />
         <Route path="/social" element={<CheckAuthentication element={SocialIndex} />} />

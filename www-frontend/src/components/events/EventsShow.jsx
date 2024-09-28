@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { IconButton, CircularProgress, Typography, Box, Card, CardMedia, CardContent, AvatarGroup, Avatar, Button, Snackbar, Alert, Divider } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import AddIcon from '@mui/icons-material/Add'; 
+import AddIcon from '@mui/icons-material/Add';
 import EventImage from './assets/event-image.png';
+import EventPictureCard from './EventPictureCard';
 
 export default function EventsShow() {
     const { id } = useParams();
     const [event, setEvent] = useState(undefined);
     const [users, setUsers] = useState(undefined);
-    const [checkingIn, setCheckingIn] = useState(false); 
+    const [eventPictures, setEventPictures] = useState([]);
+    const [checkingIn, setCheckingIn] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarType, setSnackbarType] = useState('success'); // Para alternar entre éxito y error
     const userId = localStorage.getItem('CURRENT_USER_ID');
+    const navigate = useNavigate();
 
     const handleBackClick = () => {
-        window.history.back();
+        navigate('/bars');
     };
 
     const handleCheckIn = () => {
@@ -50,13 +53,15 @@ export default function EventsShow() {
             .then(response => {
                 setEvent(response.data);
                 setUsers(response.data.users);
+                setEventPictures(response.data.event_pictures);
+                console.log(response.data);
             });
-        }, [id]);
-        
-        if (!event) {
-            return <CircularProgress />;
-        }
-        
+    }, [id]);
+
+    if (!event) {
+        return <CircularProgress />;
+    }
+
     return (
         <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -68,7 +73,7 @@ export default function EventsShow() {
                     {event.name}
                 </Typography>
             </div>
-        
+
             <div style={{ padding: '50px', marginTop: '-10px' }}>
                 <Card sx={{ maxWidth: 345, borderRadius: '16px', boxShadow: '2px 2px 20px rgba(0, 0, 0, 0.4)' }}>
                     <CardMedia
@@ -78,7 +83,7 @@ export default function EventsShow() {
                         alt="Event image"
                         sx={{ borderRadius: '16px 16px 0 0' }}
                     />
-                
+
                     <CardContent>
                         <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                             <LocationOnIcon sx={{ color: 'gray', marginRight: '8px' }} />
@@ -107,7 +112,7 @@ export default function EventsShow() {
                                     height: 30
                                 },
                                 '& .MuiAvatarGroup-count': {
-                                    width: 30, 
+                                    width: 30,
                                     height: 30,
                                     fontSize: '0.60 rem'
                                 }
@@ -120,7 +125,7 @@ export default function EventsShow() {
                             ))}
                         </AvatarGroup>
                     </Link>
-                    
+
                     <Button 
                         variant="outlined" 
                         size="small" 
@@ -131,19 +136,19 @@ export default function EventsShow() {
                         {checkingIn ? <CircularProgress size={24} /> : 'Check-In'}
                     </Button>
                 </Box>
-                
+
                 <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: '20px' }}>
                     {users.slice(0, 2).map((user, index) => 
                         `${user.first_name} ${user.last_name}${index !== 1 ? ', ' : ' and '}`
                     )}
                     {users.length - 2} others
                 </Typography>   
-                
+
                 {/* ------- About Event ------- */}
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black', marginTop: '20px' }}>
                     About Event
                 </Typography>
-            
+
                 <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: '5px' }}>
                     {event.description}
                 </Typography>
@@ -155,7 +160,7 @@ export default function EventsShow() {
                 <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black', marginTop: '20px' }}>
                     Location
                 </Typography>
-            
+
                 <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: '5px' }}>
                     {event.bar.address.line1} <br/>
                     {event.bar.address.line2}, {event.bar.address.city}
@@ -170,14 +175,25 @@ export default function EventsShow() {
                         Photos
                     </Typography>
 
-                    <Link to={`/events_pictures/new/event_id=${id}`} style={{ textDecoration: 'none' }}>
+                    <Link to={`/events_pictures/new/event_id/${id}`} state={{ eventName: event.name }} style={{ textDecoration: 'none' }}>
                         <IconButton sx={{ color: 'black', marginTop: '10px' }}>
                             <AddIcon />
                         </IconButton>
                     </Link>
                 </div>
-                {/* ------- Photos ------- */}
 
+                <div style={{ marginTop: '20px', overflowY: 'auto', overflow: 'hidden' }}>
+                    {eventPictures.length > 0 ? (
+                        eventPictures.map((picture) => (
+                            <EventPictureCard key={picture.picture.id} url={picture.picture.url} firstName={picture.user.first_name} lastName={picture.user.last_name} />
+                        ))
+                    ) : (
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+
+                        </Typography>
+                    )}
+                </div>
+                {/* ------- Photos ------- */}
 
             </div>
 

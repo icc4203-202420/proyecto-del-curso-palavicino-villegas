@@ -46,6 +46,7 @@ export default function Login() {
       });
   };
   
+  console.log(localStorage.getItem('CURRENT_USER_ID'));
   return (
     <Container maxWidth="xs">
       <Box mt={5}>
