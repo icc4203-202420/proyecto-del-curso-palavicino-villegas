@@ -8,13 +8,30 @@ import { Link } from 'react-router-dom';
 function UsersIndex() {
   const [users, setUsers] = useState([]); 
   const [searchText, setSearchText] = useState('');
+  const [currentUserId, setCurrentUserId] = useState('');
+
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/v1/users')
-      .then(response => {
-        setUsers(response.data.users || response.data); 
-      })
+    const storedUserId = localStorage.getItem('CURRENT_USER_ID');
+    if (storedUserId) {
+      setCurrentUserId(storedUserId);  
+    } else {
+      console.error('CURRENT_USER_ID no encontrado en localStorage');
+    }
   }, []);
+
+  useEffect(() => {
+    if (currentUserId) {  
+      axios.get('http://localhost:3001/api/v1/users')
+        .then(response => {
+          const filteredUsers = response.data.users.filter(user => user.id !== parseInt(currentUserId));
+          setUsers(filteredUsers);
+        })
+        .catch(error => {
+          console.error('Error al obtener los usuarios:', error);
+        });
+    }
+  }, [currentUserId]);
 
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);

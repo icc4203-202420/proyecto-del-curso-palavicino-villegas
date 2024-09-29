@@ -1,9 +1,5 @@
 class API::V1::FriendshipsController < ApplicationController
-  include Authenticable
-
-  before_action :authenticate_user!, only: [:create]
   before_action :set_user
-  before_action :verify_jwt_token, only: [:create]
 
   # GET /api/v1/users/:user_id/friendships
   def index
@@ -19,6 +15,21 @@ class API::V1::FriendshipsController < ApplicationController
     end
 
     render json: { friends: friends_data }, status: :ok
+  end
+
+  # GET /api/v1/users/:user_id/friendships/:id
+  def show
+    friend = User.find_by(id: params[:id])
+
+    if friend.nil?
+      render json: { error: "Friend not found" }, status: :not_found
+      return
+    end
+
+    # Mostrar en el show social si ya son amigos
+    is_friend = Friendship.exists?(user_id: @user.id, friend_id: friend.id)
+
+    render json: { is_friend: is_friend }, status: :ok
   end
 
   # POST /api/v1/users/:user_id/friendships
