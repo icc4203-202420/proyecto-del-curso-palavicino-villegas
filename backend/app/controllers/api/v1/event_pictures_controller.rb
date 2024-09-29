@@ -12,6 +12,6 @@ class API::V1::EventPicturesController < ApplicationController
   private
 
   def event_picture_params
-    params.require(:event_picture).permit(:event_id, :user_id, :description, :picture)
+    params.require(:event_picture).permit(:event_id, :user_id, :description, :picture, :tagged_friends)
   end
 end

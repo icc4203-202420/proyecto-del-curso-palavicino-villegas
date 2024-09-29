@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { Button, TextField, CircularProgress } from '@mui/material';
+import { Button, TextField, CircularProgress, Autocomplete } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 export default function EventPictureForm() {
@@ -12,14 +12,25 @@ export default function EventPictureForm() {
   const navigate = useNavigate();
   const { eventName } = location.state || {};
   const [picture, setPicture] = useState(null);
+  const [friends, setFriends] = useState([]);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [taggedFriends, setTaggedFriends] = useState([]);
 
   useEffect(() => {
-    const userId = localStorage.getItem('CURRENT_USER_ID');
-    if (userId) {
-      setUserId(userId);
+    const storedUserId = localStorage.getItem('CURRENT_USER_ID');
+    
+    if (storedUserId) {
+      setUserId(storedUserId);
+
+      axios.get(`http://localhost:3001/api/v1/users/${storedUserId}`)
+        .then((response) => {
+          setFriends(response.data.friends);
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error);
+        });
     } else {
       console.error('CURRENT_USER_ID is not found in localStorage');
     }
@@ -47,6 +58,7 @@ export default function EventPictureForm() {
     formData.append('event_picture[description]', description);
     formData.append('event_picture[event_id]', id);
     formData.append('event_picture[user_id]', userId);
+    formData.append('event_picture[tagged_friends]', JSON.stringify(taggedFriends));
 
     try {
       const response = await axios.post('http://localhost:3001/api/v1/event_pictures', formData, {
@@ -54,7 +66,6 @@ export default function EventPictureForm() {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(response.data);
       navigate(`/events/${id}`);
     } catch (error) {
       console.error('Error uploading picture:', error);
@@ -78,9 +89,6 @@ export default function EventPictureForm() {
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '20px' }}>
-        </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
           <label htmlFor="upload-input" style={{ cursor: 'pointer' }}>
@@ -98,13 +106,13 @@ export default function EventPictureForm() {
             >
               {picture ? (
                 <img
-                src={URL.createObjectURL(picture)}
+                  src={URL.createObjectURL(picture)}
                   alt="Selected"
                   style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }}
-                  />
-                ) : (
-                  <AddIcon style={{ fontSize: '2rem', color: 'white' }} />
-                )}
+                />
+              ) : (
+                <AddIcon style={{ fontSize: '2rem', color: 'white' }} />
+              )}
             </div>
           </label>
           <input
@@ -116,16 +124,39 @@ export default function EventPictureForm() {
           />
         </div>
 
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '20px' }}>
+          <Autocomplete
+            multiple
+            id="tag-friends-autocomplete"
+            options={friends} 
+            getOptionLabel={(option) => option.handle} 
+            value={taggedFriends}
+            onChange={(event, newValue) => {
+              setTaggedFriends(newValue);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Tag your friends"
+                placeholder="Search by handle"
+                sx={{marginTop: '20px'}}
+              />
+            )}
+          />
+        </div>
+
         <TextField
           label="Description"
           variant="outlined"
           fullWidth
           value={description}
           onChange={handleDescriptionChange}
-          sx={{marginBottom: '20px', marginTop: '40px'}}
+          sx={{ marginBottom: '20px'}}
         />
 
-        <Button sx={{background: 'linear-gradient(to right, #FFDB01, #FF8603)'}} variant="contained" type="submit" disabled={loading || !userId} fullWidth>
+        <Button sx={{ background: 'linear-gradient(to right, #FFDB01, #FF8603)' }} variant="contained" type="submit" disabled={loading || !userId} fullWidth>
           {loading ? <CircularProgress size={24} /> : 'Upload'}
         </Button>
       </form>

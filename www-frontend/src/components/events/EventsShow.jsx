@@ -54,7 +54,7 @@ export default function EventsShow() {
                 setEvent(response.data);
                 setUsers(response.data.users);
                 setEventPictures(response.data.event_pictures);
-                console.log(response.data);
+                // console.log(response.data);
             });
     }, [id]);
 
@@ -183,16 +183,27 @@ export default function EventsShow() {
                 </div>
 
                 <div style={{ marginTop: '20px', overflowY: 'auto', overflow: 'hidden' }}>
-                    {eventPictures.length > 0 ? (
-                        eventPictures.map((picture) => (
-                            <EventPictureCard key={picture.picture.id} url={picture.picture.url} firstName={picture.user.first_name} lastName={picture.user.last_name} />
-                        ))
-                    ) : (
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {eventPictures.length > 0 ? (
+                    eventPictures.map((picture) => {
+                    // console.log(picture.tagged_friends);
 
-                        </Typography>
-                    )}
-                </div>
+                    return (
+                        <EventPictureCard
+                        key={picture.picture.id}
+                        url={picture.picture.url}
+                        firstName={picture.user.first_name}
+                        lastName={picture.user.last_name}
+                        taggedFriends={picture.tagged_friends}
+                        description={picture.description}
+                        />
+                    );
+                    })
+                ) : (
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    No pictures available.
+                    </Typography>
+                )}
+            </div>
                 {/* ------- Photos ------- */}
 
             </div>

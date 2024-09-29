@@ -8,8 +8,13 @@ class API::V1::UsersController < ApplicationController
   end
 
   def show
-    render json: { user: @user }, status: :ok
+    render json: {
+      user: @user,
+      friends: @user.friends,
+      inverse_friends: @user.inverse_friends
+    }, status: :ok
   end
+
 
   def create
     @user = User.new(user_params)

@@ -33,22 +33,23 @@ class API::V1::EventsController < ApplicationController
           only: [:id, :description],
           include: {
             user: {
-              only: [:id, :first_name, :last_name],
+              only: [:id, :first_name, :last_name]
             },
             picture: {
               only: [:id, :description, :user_id],
               methods: :url
             }
-          }
+          },
+          methods: :tagged_friends
         }
       }
     )
 
     if @event.flyer.attached?
-      event_data.merge!({
+      event_data.merge!(
         flyer_url: url_for(@event.flyer),
         thumbnail_url: url_for(@event.thumbnail)
-      })
+      )
     end
 
     render json: event_data, status: :ok
