@@ -12,6 +12,11 @@ class API::V1::EventsController < ApplicationController
     render json: @events.as_json(include: { bar: { only: :name } }), status: :ok
   end
 
+  def all_events
+    @events = Event.all
+    render json: @events.as_json(include: { bar: { only: :name } }), status: :ok
+  end
+
   def show
     event_data = @event.as_json(
       include: {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, Avatar, Typography, IconButton, Button, Box, CircularProgress } from '@mui/material';
+import { Card, CardContent, Avatar, Typography, IconButton, Button, Box, CircularProgress, MenuItem, Select } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import GroupIcon from '@mui/icons-material/Group';
 import ClearIcon from '@mui/icons-material/Clear'; 
@@ -15,7 +15,10 @@ function SocialShow() {
   const [currentUserId, setCurrentUserId] = useState(null);  
   const [isFriend, setIsFriend] = useState(false);  
   const [loading, setLoading] = useState(false);  
+  const [events, setEvents] = useState([]); 
+  const [selectedEvent, setSelectedEvent] = useState(""); 
 
+  // set Current User
   useEffect(() => {
     const storedUserId = localStorage.getItem('CURRENT_USER_ID');
     if (storedUserId) {
@@ -23,7 +26,6 @@ function SocialShow() {
     } 
   }, []);
 
-  // set Current User
   useEffect(() => {
     axios.get(`http://localhost:3001/api/v1/users/${id}`)
       .then(response => {
@@ -34,16 +36,31 @@ function SocialShow() {
       });
   }, [id]);
 
-  // Verificar si ya hay friendship
-  useEffect(() => {
-    if (currentUserId) {
-      axios.get(`http://localhost:3001/api/v1/users/${currentUserId}/friendships/${id}`)
-        .then(response => {
-          setIsFriend(response.data.is_friend);  
-        })
-    }
-  }, [id, currentUserId]);
+// Verificar si ya hay friendship y obtener el event_id asociado
+useEffect(() => {
+  if (currentUserId) {
+    axios.get(`http://localhost:3001/api/v1/users/${currentUserId}/friendships/${id}`)
+      .then(response => {
+        console.log('Respuesta completa:', response.data);
+        setIsFriend(response.data.is_friend);  
 
+        const eventId = response.data.friendship.event_id;
+        
+      })
+      .catch(error => {
+        console.error('Error al verificar la amistad:', error);
+      });
+  }
+}, [id, currentUserId]);
+
+  // Obtener eventos
+  useEffect(() => {
+    axios.get('http://localhost:3001/api/v1/events/all_events')
+      .then(response => {
+        setEvents(response.data);
+      })
+  }, []);  
+  
   // Agregar friendship
   const handleAddFriend = async () => {
     if (!currentUserId) {
@@ -67,7 +84,22 @@ function SocialShow() {
     } finally {
       setLoading(false);
     }
-  };  
+  };
+
+  const handleEventSelect = async (event) => {
+    const selectedEventId = event.target.value;
+    setSelectedEvent(selectedEventId); 
+  
+    try {
+      const response = await axios.patch(`http://localhost:3001/api/v1/users/${currentUserId}/friendships/${id}`, {
+        friendship: { event_id: selectedEventId }
+      });
+  
+      console.log('Event_id set:', response.data);
+    } catch (error) {
+      console.error('Error', error.response);
+    }
+  };
 
   if (!user) {
     return <Typography>Cargando...</Typography>;
@@ -79,25 +111,25 @@ function SocialShow() {
         <IconButton onClick={() => window.history.back()} sx={{ color: 'black' }}>
           <ArrowBackIosIcon />
         </IconButton>
-        <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black'}}>
-            @{user.handle}
+        <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'black' }}>
+          @{user.handle}
         </Typography>
       </Box>
-
+  
       <Card sx={{ maxWidth: '400px', margin: '0 auto', p: 3, boxShadow: 3 }}>
         <CardContent sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
           <Avatar sx={{ width: 80, height: 80, mb: 2 }}>
             {user.first_name ? user.first_name[0] : user.handle[0]}
           </Avatar>
-
+  
           <Typography variant="h5" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
             {user.first_name ? `${user.first_name} ${user.last_name}` : user.handle}
           </Typography>
-
+  
           <Typography variant="body1" sx={{ color: 'textSecondary', mt: 1 }}>
             {`${friendCount} Friends • ${mutualCount} mutual`}
           </Typography>
-
+  
           {!isFriend ? (
             <Button
               variant="contained"
@@ -116,38 +148,71 @@ function SocialShow() {
               {loading ? <CircularProgress size={24} /> : '+ ADD FRIEND'}
             </Button>
           ) : (
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: '#FF8603',
-                  color: 'white',
-                  textTransform: 'none',
-                  fontWeight: 'bold',
-                  mr: 1,
-                }}
-                startIcon={<CheckIcon />} 
-              >
-                Friends
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: '#FF8603',
-                  color: 'white',
-                  textTransform: 'none',
-                  fontWeight: 'bold',
-                }}
-                startIcon={<ClearIcon />}
-              >
-                Remove
-              </Button>
-            </Box>
+            <>
+              <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#FF8603',
+                    color: 'white',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    mr: 1,
+                  }}
+                  startIcon={<CheckIcon />}
+                >
+                  Friends
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#FF8603',
+                    color: 'white',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                  }}
+                  startIcon={<ClearIcon />}
+                >
+                  Remove
+                </Button>
+              </Box>
+  
+              {/* Dropdown para seleccionar el evento */}
+              <Box sx={{ width: '100%', mt: 3 }}>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  HOW YOU MET:
+                </Typography>
+                <Select
+                  fullWidth
+                  value={selectedEvent || ""}  
+                  onChange={handleEventSelect}
+                  sx={{
+                    backgroundColor: '#FF8603',  
+                    color: 'white',  
+                    '& .MuiSelect-icon': {
+                      color: 'white',  
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#FF8603',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#FF8603', 
+                    },
+                  }}
+                >
+                  {events.map(event => (
+                    <MenuItem key={event.id} value={event.id} sx={{ backgroundColor: 'white', color: 'black' }}>
+                      {event.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+            </>
           )}
         </CardContent>
       </Card>
     </div>
-  );
+  );  
 }
 
 export default SocialShow;

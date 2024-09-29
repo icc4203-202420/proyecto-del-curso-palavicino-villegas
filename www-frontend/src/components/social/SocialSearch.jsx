@@ -11,6 +11,7 @@ function UsersIndex() {
   const [currentUserId, setCurrentUserId] = useState('');
 
 
+  // Set currentUser
   useEffect(() => {
     const storedUserId = localStorage.getItem('CURRENT_USER_ID');
     if (storedUserId) {
@@ -20,6 +21,7 @@ function UsersIndex() {
     }
   }, []);
 
+  // Setear todos los usarios excepto el current 
   useEffect(() => {
     if (currentUserId) {  
       axios.get('http://localhost:3001/api/v1/users')

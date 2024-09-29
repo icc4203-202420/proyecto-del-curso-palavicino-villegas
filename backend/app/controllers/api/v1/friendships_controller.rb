@@ -22,14 +22,22 @@ class API::V1::FriendshipsController < ApplicationController
     friend = User.find_by(id: params[:id])
 
     if friend.nil?
-      render json: { error: "Friend not found" }, status: :not_found
-      return
+      return render json: { error: "Friend not found" }, status: :not_found
     end
 
-    # Mostrar en el show social si ya son amigos
-    is_friend = Friendship.exists?(user_id: @user.id, friend_id: friend.id)
+    friendship = Friendship.find_by(user_id: @user.id, friend_id: friend.id)
 
-    render json: { is_friend: is_friend }, status: :ok
+    if friendship
+      render json: {
+        is_friend: true,
+        friendship: {
+          friend_id: friendship.friend_id,
+          event_id: friendship.event_id 
+        }
+      }, status: :ok
+    else
+      render json: { is_friend: false }, status: :ok
+    end
   end
 
   # POST /api/v1/users/:user_id/friendships
@@ -58,6 +66,17 @@ class API::V1::FriendshipsController < ApplicationController
     end
   end
 
+  # PATCH /api/v1/users/:user_id/friendships/:id
+  def update
+    friendship = Friendship.find(params[:id])
+
+    if friendship.update(friendship_params)
+      render json: friendship, status: :ok
+    else
+      render json: friendship.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_user
@@ -65,6 +84,6 @@ class API::V1::FriendshipsController < ApplicationController
   end
 
   def friendship_params
-    params.require(:friendship).permit(:id, :friend_id, :bar_id)
+    params.require(:friendship).permit(:id, :friend_id, :bar_id, :event_id)
   end
 end

@@ -44,6 +44,8 @@ if Rails.env.development?
     FactoryBot.create(:friendship, user: user_pair[0], friend: user_pair[1], bar: bars.sample)
   end
 
+  EVENT = FactoryBot.create(:event, bar: bars.sample, name: "Carretito")
+
   # Crear attendances (asistencia) de usuarios a eventos
   users.each do |user|
     events.sample(rand(1..3)).each do |event|
