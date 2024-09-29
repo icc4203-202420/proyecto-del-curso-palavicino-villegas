@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, Avatar, Typography, IconButton, Button, Box, CircularProgress, MenuItem, Select } from '@mui/material';
+import { Card, CardContent, Avatar, Typography, IconButton, Button, Box, CircularProgress } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import GroupIcon from '@mui/icons-material/Group';
 import ClearIcon from '@mui/icons-material/Clear'; 
 import CheckIcon from '@mui/icons-material/Check'; 
+import Autocomplete from '@mui/material/Autocomplete'; 
+import TextField from '@mui/material/TextField'; 
 import axios from 'axios';
 
 function SocialShow() {
@@ -16,9 +18,9 @@ function SocialShow() {
   const [isFriend, setIsFriend] = useState(false);  
   const [loading, setLoading] = useState(false);  
   const [events, setEvents] = useState([]); 
-  const [selectedEvent, setSelectedEvent] = useState(""); 
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // set Current User
+  // Obtener el currentUserId desde localStorage
   useEffect(() => {
     const storedUserId = localStorage.getItem('CURRENT_USER_ID');
     if (storedUserId) {
@@ -26,6 +28,7 @@ function SocialShow() {
     } 
   }, []);
 
+  // Obtener datos del usuario del show
   useEffect(() => {
     axios.get(`http://localhost:3001/api/v1/users/${id}`)
       .then(response => {
@@ -36,22 +39,26 @@ function SocialShow() {
       });
   }, [id]);
 
-// Verificar si ya hay friendship y obtener el event_id asociado
-useEffect(() => {
-  if (currentUserId) {
-    axios.get(`http://localhost:3001/api/v1/users/${currentUserId}/friendships/${id}`)
-      .then(response => {
-        console.log('Respuesta completa:', response.data);
-        setIsFriend(response.data.is_friend);  
+  // Obtener datos del la amistad (si ya existe y el evento)
+  const loadFriendshipData = () => {
+    if (currentUserId) {
+      axios.get(`http://localhost:3001/api/v1/users/${currentUserId}/friendships/${id}`)
+        .then(response => {
+          console.log('Respuesta completa:', response.data);
+          setIsFriend(response.data.is_friend);  
+  
+          const eventId = response.data.friendship ? response.data.friendship.event_id : null;
+          if (eventId) {
+            const selectedEvent = events.find(event => event.id === eventId);
+            setSelectedEvent(selectedEvent || null);
+          }
+        })
+    }
+  };
 
-        const eventId = response.data.friendship.event_id;
-        
-      })
-      .catch(error => {
-        console.error('Error al verificar la amistad:', error);
-      });
-  }
-}, [id, currentUserId]);
+  useEffect(() => {
+    loadFriendshipData();
+  }, [id, currentUserId, events]);
 
   // Obtener eventos
   useEffect(() => {
@@ -61,7 +68,6 @@ useEffect(() => {
       })
   }, []);  
   
-  // Agregar friendship
   const handleAddFriend = async () => {
     if (!currentUserId) {
       return;
@@ -79,6 +85,7 @@ useEffect(() => {
   
       console.log('Amigo agregado:', response.data);
       setIsFriend(true); 
+      loadFriendshipData(); 
     } catch (error) {
       console.error('Error al agregar amigo:', error.response);
     } finally {
@@ -86,20 +93,23 @@ useEffect(() => {
     }
   };
 
-  const handleEventSelect = async (event) => {
-    const selectedEventId = event.target.value;
-    setSelectedEvent(selectedEventId); 
+  const handleEventSelect = async (event, newValue) => {  
+    if (newValue) { 
+      setSelectedEvent(newValue); 
   
-    try {
-      const response = await axios.patch(`http://localhost:3001/api/v1/users/${currentUserId}/friendships/${id}`, {
-        friendship: { event_id: selectedEventId }
-      });
+      try {
+        const response = await axios.patch(`http://localhost:3001/api/v1/users/${currentUserId}/friendships/${id}`, {
+          friendship: { event_id: newValue.id } 
+        });
+        console.log('Event_id set:', response.data);
   
-      console.log('Event_id set:', response.data);
-    } catch (error) {
-      console.error('Error', error.response);
+        loadFriendshipData();
+        
+      } catch (error) {
+        console.error('Error al actualizar el evento:', error.response);
+      }
     }
-  };
+  };  
 
   if (!user) {
     return <Typography>Cargando...</Typography>;
@@ -177,35 +187,45 @@ useEffect(() => {
                 </Button>
               </Box>
   
-              {/* Dropdown para seleccionar el evento */}
+              {/* Autocomplete para buscar el evento */}
               <Box sx={{ width: '100%', mt: 3 }}>
                 <Typography variant="body1" sx={{ mb: 1 }}>
                   HOW YOU MET:
                 </Typography>
-                <Select
-                  fullWidth
-                  value={selectedEvent || ""}  
-                  onChange={handleEventSelect}
-                  sx={{
-                    backgroundColor: '#FF8603',  
-                    color: 'white',  
-                    '& .MuiSelect-icon': {
-                      color: 'white',  
-                    },
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#FF8603',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#FF8603', 
-                    },
-                  }}
-                >
-                  {events.map(event => (
-                    <MenuItem key={event.id} value={event.id} sx={{ backgroundColor: 'white', color: 'black' }}>
-                      {event.name}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Autocomplete
+                  options={events}
+                  getOptionLabel={(option) => option.name || ''} 
+                  value={selectedEvent || "No events selected"}
+                  onChange={(event, newValue) => handleEventSelect(event, newValue)} 
+                  renderInput={(params) => (
+                    <TextField 
+                      {...params} 
+                      label="Buscar evento" 
+                      variant="outlined"
+                      sx={{
+                        backgroundColor: '#FF8603',  
+                        color: 'white',  
+                        '& .MuiOutlinedInput-root': {
+                          '& fieldset': {
+                            borderColor: '#FF8603',
+                          },
+                          '&:hover fieldset': {
+                            borderColor: '#FF8603',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#FF8603',
+                          },
+                        },
+                      }}
+                    />
+                  )}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  )}
+                />
+
               </Box>
             </>
           )}

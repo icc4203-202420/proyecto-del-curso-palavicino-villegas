@@ -17,9 +17,9 @@ class API::V1::FriendshipsController < ApplicationController
     render json: { friends: friends_data }, status: :ok
   end
 
-  # GET /api/v1/users/:user_id/friendships/:id
+  # GET /api/v1/users/:user_id/friendships/:friend_id
   def show
-    friend = User.find_by(id: params[:id])
+    friend = User.find_by(id: params[:friend_id])
 
     if friend.nil?
       return render json: { error: "Friend not found" }, status: :not_found
@@ -66,9 +66,21 @@ class API::V1::FriendshipsController < ApplicationController
     end
   end
 
-  # PATCH /api/v1/users/:user_id/friendships/:id
+  # PATCH /api/v1/users/:user_id/friendships/:friend_id
   def update
-    friendship = Friendship.find(params[:id])
+    friend = User.find_by(id: params[:friend_id])
+
+    if friend.nil?
+      render json: { error: "Friend not found" }, status: :not_found
+      return
+    end
+
+    friendship = Friendship.find_by(user_id: @user.id, friend_id: friend.id)
+
+    if friendship.nil?
+      render json: { error: "Friendship not found" }, status: :not_found
+      return
+    end
 
     if friendship.update(friendship_params)
       render json: friendship, status: :ok
@@ -84,6 +96,6 @@ class API::V1::FriendshipsController < ApplicationController
   end
 
   def friendship_params
-    params.require(:friendship).permit(:id, :friend_id, :bar_id, :event_id)
+    params.require(:friendship).permit(:friend_id, :bar_id, :event_id)
   end
 end

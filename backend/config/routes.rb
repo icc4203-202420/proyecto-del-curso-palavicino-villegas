@@ -37,7 +37,7 @@ Rails.application.routes.draw do
       end
       resources :users do
         resources :reviews, only: [:index]
-        resources :friendships, only: [:index, :create, :show, :update]
+        resources :friendships, param: :friend_id, only: [:index, :create, :show, :update]
       end
 
       resources :reviews, only: [:index, :show, :create, :update, :destroy]
