@@ -9,7 +9,7 @@ const BeerReviewForm = ({ beer, visible, onClose, onSubmit }) => {
   const handleSubmit = () => {
     const wordCount = text.trim().split(/\s+/).length; 
   
-    const MIN_WORDS = 2 // cambiar a 15 antes de entregar
+    const MIN_WORDS = 15 // cambiar a 15 antes de entregar
     if (wordCount < MIN_WORDS) {
       alert('Your review must be at least 15 words long.');
       return;
