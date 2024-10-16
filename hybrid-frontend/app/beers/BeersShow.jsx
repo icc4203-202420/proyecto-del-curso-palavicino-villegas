@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { View, Text, Button, FlatList, ActivityIndicator, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Button, FlatList, ActivityIndicator, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import BeerReviewCard from './BeerReviewCard';
 import BeerReviewForm from './BeerReviewForm';
@@ -48,8 +48,7 @@ const BeersShow = ({ route }) => {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>←</Text>
@@ -58,24 +57,11 @@ const BeersShow = ({ route }) => {
       </View>
 
       <Image source={beersHomeImage} style={styles.image} />
-
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{beer.name} ({beer.style})</Text>
-
-        <Text style={styles.detailText}>
-          <Text style={styles.boldText}>Alcohol: </Text>
-            {beer.alcohol}
-        </Text>
-        
-        <Text style={styles.detailText}>
-        <Text style={styles.boldText}>Bitterness (IBU): </Text>
-            {beer.ibu}
-        </Text>
-
-        <Text style={styles.detailText}>
-          <Text style={styles.boldText}>Produced by: </Text>
-            {beer.brewery_name}
-        </Text>
+        <Text style={styles.detailText}><Text style={styles.boldText}>Alcohol: </Text>{beer.alcohol}</Text>
+        <Text style={styles.detailText}><Text style={styles.boldText}>Bitterness (IBU): </Text>{beer.ibu}</Text>
+        <Text style={styles.detailText}><Text style={styles.boldText}>Produced by: </Text>{beer.brewery_name}</Text>
 
         <Text style={styles.sectionTitle}>You can find it at:</Text>
         {beer.bar_names && beer.bar_names.length > 0 ? (
@@ -85,9 +71,9 @@ const BeersShow = ({ route }) => {
         ) : (
           <Text style={styles.detailText}>No bars found.</Text>
         )}
-
-        <Divider style={{ marginVertical: 10 }} />
       </View>
+
+      <Divider style={{ marginVertical: 10 }} />
 
       {/* Botón para escribir reseña */}
       <Button 
@@ -111,7 +97,7 @@ const BeersShow = ({ route }) => {
         renderItem={renderReview}
         ListEmptyComponent={<Text style={styles.noReviews}>No reviews found.</Text>}
       />
-    </ScrollView>
+    </View>
   );
 };
 
