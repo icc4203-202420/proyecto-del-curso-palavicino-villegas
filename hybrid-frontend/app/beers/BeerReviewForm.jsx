@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Modal } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Modal, SafeAreaView } from 'react-native';
 import Slider from '@react-native-community/slider';
 
 const BeerReviewForm = ({ beer, visible, onClose, onSubmit }) => {
@@ -20,43 +20,50 @@ const BeerReviewForm = ({ beer, visible, onClose, onSubmit }) => {
   
   return (
     <Modal visible={visible} animationType="slide">
-      <View style={styles.container}>
-        <Text style={styles.title}>{beer.name} Review</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Write your review"
-          value={text}
-          onChangeText={setText}
-        />
-        <View style={styles.sliderContainer}>
-          <Text>Rating: {rating.toFixed(1)}</Text>
-          <Slider
-            style={{ width: '100%', height: 40 }}
-            minimumValue={1}
-            maximumValue={5}
-            step={0.1}
-            value={rating}
-            onValueChange={setRating}
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Text style={styles.title}>{beer.name} Review</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Write your review"
+            placeholderTextColor="gray"
+            value={text}
+            onChangeText={setText}
           />
+          <View style={styles.sliderContainer}>
+            <Text>Rating: {rating.toFixed(1)}</Text>
+            <Slider
+              style={{ width: '100%', height: 40 }}
+              minimumValue={1}
+              maximumValue={5}
+              step={0.1}
+              value={rating}
+              onValueChange={setRating}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button title="Cancel" onPress={onClose} />
+            <Button title="Submit" onPress={handleSubmit} />
+          </View>
         </View>
-        <View style={styles.buttonContainer}>
-          <Button title="Cancel" onPress={onClose} />
-          <Button title="Submit" onPress={handleSubmit} />
-        </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 0.6,
+  },
   container: {
     flex: 1,
     padding: 20,
+    justifyContent: 'center', 
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   input: {
     height: 50,
@@ -64,7 +71,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   sliderContainer: {
     marginBottom: 20,
