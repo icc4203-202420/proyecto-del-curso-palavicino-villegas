@@ -9,6 +9,13 @@ import { Divider } from 'react-native-paper';
 import { Rating } from 'react-native-ratings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+function userReviewsFirst(reviews, currentUserId) {
+  const userReviews = reviews.filter(review => review.user_id === parseInt(currentUserId));
+  const otherReviews = reviews.filter(review => review.user_id !== parseInt(currentUserId));
+  return [...userReviews, ...otherReviews];
+}
+
 const initialState = {
   reviews: [],
   loading: true,
@@ -18,7 +25,8 @@ const initialState = {
 function reducer(state, action) {
   switch (action.type) {
     case 'FETCH_REVIEWS_SUCCESS':
-      return { ...state, reviews: action.payload, loading: false };
+      const orderedReviews = userReviewsFirst(action.payload.reviews, action.payload.currentUserId); 
+      return { ...state, reviews: orderedReviews, loading: false };
     case 'FETCH_REVIEWS_ERROR':
       return { ...state, error: action.error, loading: false };
     case 'ADD_REVIEW_SUCCESS':
@@ -43,10 +51,14 @@ const BeersShow = ({ route }) => {
     fetchReviews();
   }, [id]);
 
-  const fetchReviews = () => {
+  const fetchReviews = async () => {
+    const userId = await AsyncStorage.getItem('CURRENT_USER_ID');
     axios.get(`http://192.168.1.89:3001/api/v1/beers/${id}/reviews`)
       .then(response => {
-        dispatch({ type: 'FETCH_REVIEWS_SUCCESS', payload: response.data.reviews });
+        dispatch({ 
+          type: 'FETCH_REVIEWS_SUCCESS', 
+          payload: { reviews: response.data.reviews || [], currentUserId: userId } 
+        });
       })
       .catch(error => dispatch({ type: 'FETCH_REVIEWS_ERROR', error: error.message }));
   };
@@ -57,19 +69,14 @@ const BeersShow = ({ route }) => {
       rating: values.rating,
       beer_id: beer.id,
     };
-  
-    try {
-      const userId = await AsyncStorage.getItem('CURRENT_USER_ID');
-      
-      if (userId) {
-        await axios.post(`http://192.168.1.89:3001/api/v1/beers/${beer.id}/reviews`, { 
-          review, 
-          user_id: userId 
-        });
-        fetchReviews(state.page); 
-      }
-    } catch (error) {
-      console.error('Error submitting review:', error);
+
+    const userId = await AsyncStorage.getItem('CURRENT_USER_ID');
+    if (userId) {
+      await axios.post(`http://192.168.1.89:3001/api/v1/beers/${beer.id}/reviews`, { 
+        review, 
+        user_id: userId 
+      });
+      fetchReviews(); 
     }
   };
 
