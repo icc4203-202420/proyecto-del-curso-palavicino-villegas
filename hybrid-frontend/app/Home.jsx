@@ -1,28 +1,54 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import BarsHomeCard from './bars/BarsHomeCard';
+import BeersHomeCard from './beers/BeersHomeCard';
+import SocialHomeCard from './social/SocialHomeCard';
+import pintpalLogo from '../assets/pintpal-logo.png';
 
-const Home = ({ navigation }) => {
+const Home = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>¡Proyecto Configurado Correctamente!</Text>
-      <Button
-        title="Ir a Login"
-        onPress={() => navigation.navigate('Login')}
-      />
-    </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>PintPal</Text>
+        <Image source={pintpalLogo} style={styles.logo} />
+      </View>
+
+      {/* Cards Section */}
+      <View style={styles.cardsContainer}>
+        <BarsHomeCard />
+        <BeersHomeCard />
+        <SocialHomeCard />
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    flexGrow: 1,
     alignItems: 'center',
+    paddingTop: 20,
     backgroundColor: '#f5f5f5',
   },
-  title: {
-    fontSize: 24,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '600',
+    marginRight: 10,
+  },
+  logo: {
+    width: 50,
+    height: 50,
+  },
+  cardsContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
   },
 });
 
