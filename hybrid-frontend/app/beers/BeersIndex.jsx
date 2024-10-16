@@ -44,6 +44,8 @@ const BeersIndex = () => {
         renderItem={({ item }) => <BeersIndexCard beer={item} />}
         ListEmptyComponent={<Text style={styles.noBeers}>No beers found.</Text>}
         contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false} 
+        scrollEventThrottle={16} 
       />
     </View>
   );
