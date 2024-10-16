@@ -14,13 +14,15 @@ const Home = () => {
       <View style={styles.header}>
         <Text style={styles.title}>PintPal</Text>
         <Image source={pintpalLogo} style={styles.logo} />
-        {/* <Button title="Logout" onPress={() => navigation.navigate('Logout')} color="#FF8603" /> */}
       </View>
 
       <View style={styles.cardsContainer}>
         <BarsHomeCard />
         <BeersHomeCard />
         <SocialHomeCard />
+      </View>
+      <View style={styles.logout}>
+        <Button title="Logout" onPress={() => navigation.navigate('Logout')} color="#FF8603" />
       </View>
     </ScrollView>
   );
@@ -46,7 +48,11 @@ const styles = StyleSheet.create({
   logo: {
     width: 50,
     height: 50,
-    marginRight: 10, // Para espaciar el logo del botón
+    marginRight: 10, 
+  },
+  logout: {
+    marginTop: 25,
+    marginBottom: 20
   },
   cardsContainer: {
     width: '100%',

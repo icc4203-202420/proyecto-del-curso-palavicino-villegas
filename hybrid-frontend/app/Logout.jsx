@@ -17,7 +17,7 @@ const Logout = () => {
       }
 
       await axios.delete('http://192.168.1.89:3001/api/v1/logout', {
-        headers: { Authorization: `Bearer ${JWT_TOKEN}` }, // Preceder con "Bearer"
+        headers: { Authorization: `${JWT_TOKEN}` }, 
       });
 
       // Eliminar JWT_TOKEN y CURRENT_USER_ID del AsyncStorage
