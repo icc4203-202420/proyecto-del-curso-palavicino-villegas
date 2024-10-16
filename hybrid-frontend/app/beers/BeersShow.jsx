@@ -6,6 +6,7 @@ import BeerReviewForm from './BeerReviewForm';
 import beersHomeImage from '../../assets/beers_home.png';
 import { useNavigation } from '@react-navigation/native';
 import { Divider } from 'react-native-paper'; 
+import { Rating } from 'react-native-ratings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
@@ -94,6 +95,21 @@ const BeersShow = ({ route }) => {
           <Text style={styles.detailText}><Text style={styles.boldText}>Alcohol: </Text>{beer.alcohol}</Text>
           <Text style={styles.detailText}><Text style={styles.boldText}>Bitterness (IBU): </Text>{beer.ibu}</Text>
           <Text style={styles.detailText}><Text style={styles.boldText}>Produced by: </Text>{beer.brewery_name}</Text>
+
+          <View style={styles.ratingContainer}>
+          <Rating
+            type='custom'
+            imageSize={25} 
+            readonly
+            startingValue={beer.avg_rating}
+            fractions={1} 
+            ratingColor="#FFD700" 
+            tintColor="#f5f5f5" 
+          />
+            <Text style={styles.ratingText}>
+              {parseFloat(beer.avg_rating).toFixed(2)}
+            </Text>
+          </View>
 
           <Text style={styles.sectionTitle}>You can find it at:</Text>
           {beer.bar_names && beer.bar_names.length > 0 ? (
@@ -211,6 +227,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  ratingText: {
+    marginLeft: 8,
+    fontSize: 16,
+    color: '#000',
   },
 });
 

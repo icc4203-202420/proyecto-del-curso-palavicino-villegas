@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Rating } from 'react-native-ratings';
 
 const BeerReviewCard = ({ review }) => {
   return (
@@ -13,7 +14,17 @@ const BeerReviewCard = ({ review }) => {
         <Text style={styles.username}>@{review.user.handle}</Text>
       </View>
       <View style={styles.ratingContainer}>
-        <Text style={styles.rating}>⭐ {parseFloat(review.rating).toFixed(1)}</Text>
+        <Rating
+              type='custom'
+              imageSize={20} 
+              readonly
+              startingValue={review.rating}
+              fractions={1} 
+              ratingColor="#FFD700" 
+              ratingBackgroundColor="#E0E0E0"
+              tintColor="white" 
+        />
+        <Text style={styles.rating}>  {parseFloat(review.rating).toFixed(1)}</Text>
         <Text style={styles.date}>
           • {new Date(review.created_at).toLocaleDateString('es-CL', { month: 'short', year: 'numeric' })}
         </Text>
