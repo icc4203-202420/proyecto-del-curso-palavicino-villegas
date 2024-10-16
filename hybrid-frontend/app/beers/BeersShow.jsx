@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { View, Text, Button, FlatList, ActivityIndicator, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Button, FlatList, ActivityIndicator, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import BeerReviewCard from './BeerReviewCard';
 import BeerReviewForm from './BeerReviewForm';
@@ -87,7 +87,7 @@ const BeersShow = ({ route }) => {
   );
 
   return (
-    <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+    
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -128,7 +128,7 @@ const BeersShow = ({ route }) => {
           )}
         </View>
 
-        <Divider style={{ marginVertical: 10 }} />
+        <Divider style={{ marginVertical: 0 }} />
 
         <Button 
           title="Write a Review" 
@@ -142,8 +142,8 @@ const BeersShow = ({ route }) => {
           onClose={() => setopenReviewForm(false)}
           onSubmit={handleReviewSubmit}
         />
-
-        <View style={styles.reviewsSection}>
+           
+        <View style={{ flex: 1 }}>
           <Text style={styles.reviewsTitle}>Reviews</Text>
           {state.loading ? (
             <ActivityIndicator size="large" />
@@ -153,22 +153,19 @@ const BeersShow = ({ route }) => {
               keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
               renderItem={renderReview}
               ListEmptyComponent={<Text style={styles.noReviews}>No reviews found.</Text>}
-              scrollEnabled={false} 
+              initialNumToRender={5}  
             />
           )}
         </View>
       </View>
-    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
   container: {
+    flex: 1,
     padding: 20,
+    backgroundColor: '#F5F5F5'
   },
   header: {
     flexDirection: 'row',
@@ -186,7 +183,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 100,
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -218,13 +215,10 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 16,
   },
-  reviewsSection: {
-    marginTop: 20,
-  },
   reviewsTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   boldText: {
     fontSize: 16,
