@@ -7,8 +7,8 @@ const BeersIndexCard = ({ beer }) => {
 
   return (
     <TouchableOpacity 
-      onPress={() => navigation.navigate('BeerDetails', { id: beer.id })}
-      style={styles.card}
+        onPress={() => navigation.navigate('BeersShow', { id: beer.id })} 
+        style={styles.card}
     >
       <View style={styles.content}>
         <Text style={styles.name}>{beer.name}</Text>
