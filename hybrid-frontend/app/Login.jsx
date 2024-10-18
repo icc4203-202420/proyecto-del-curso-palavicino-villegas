@@ -12,7 +12,7 @@ const Login = () => {
   const navigation = useNavigation();
 
   const handleSubmit = () => {
-    axios.post('http://192.168.1.89:3001/api/v1/login', { user: { email, password } })
+    axios.post('http://192.168.1.89:3001/api/v1/login', { user: { email, password } })  // Cambiar IP Local: 192.168.1.89
       .then(response => {
         const JWT_TOKEN = response.headers['authorization'];
         const CURRENT_USER_ID = response.data.status.data.user.id;

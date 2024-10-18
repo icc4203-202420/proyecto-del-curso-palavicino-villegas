@@ -19,13 +19,13 @@ const Signup = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    axios.get('http://192.168.1.89:3001/api/v1/countries')
+    axios.get('http://192.168.1.89:3001/api/v1/countries')  // Cambiar IP Local: 192.168.1.89
       .then(response => setCountries(response.data))
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
 
   const handleSubmit = () => {
-    axios.post('http://192.168.1.89:3001/api/v1/signup', {
+    axios.post('http://192.168.1.89:3001/api/v1/signup', {  // Cambiar IP Local: 192.168.1.89
       user: {
         first_name: firstName,
         last_name: lastName,

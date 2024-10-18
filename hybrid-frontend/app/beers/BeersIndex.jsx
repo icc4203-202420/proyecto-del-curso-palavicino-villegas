@@ -9,7 +9,7 @@ const BeersIndex = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://192.168.1.89:3001/api/v1/beers')
+    axios.get('http://192.168.1.89:3001/api/v1/beers')  // Cambiar IP Local: 192.168.1.89
       .then(response => {
         setBeers(response.data.beers);
         setLoading(false);

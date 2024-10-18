@@ -16,7 +16,7 @@ const Logout = () => {
         return;
       }
 
-      await axios.delete('http://192.168.1.89:3001/api/v1/logout', {
+      await axios.delete('http://192.168.1.89:3001/api/v1/logout', {  // Cambiar IP Local: 192.168.1.89
         headers: { Authorization: `${JWT_TOKEN}` }, 
       });
 
