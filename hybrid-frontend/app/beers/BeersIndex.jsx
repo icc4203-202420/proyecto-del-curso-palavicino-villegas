@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TextInput, FlatList, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import axios from 'axios';
 import BeersIndexCard from './BeersIndexCard';
+import { NGROK_URL } from '@env';
 
 const BeersIndex = () => {
   const [beers, setBeers] = useState([]);
@@ -9,7 +10,7 @@ const BeersIndex = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://192.168.1.89:3001/api/v1/beers')  // Cambiar IP Local: 192.168.1.89
+    axios.get(`${NGROK_URL}/api/v1/beers`)  // Cambiar IP Local: 192.168.1.30
       .then(response => {
         setBeers(response.data.beers);
         setLoading(false);

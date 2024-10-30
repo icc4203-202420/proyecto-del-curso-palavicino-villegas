@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import { NGROK_URL } from '@env';
 
 const Logout = () => {
   const navigation = useNavigation();
@@ -16,7 +17,7 @@ const Logout = () => {
         return;
       }
 
-      await axios.delete('http://192.168.1.89:3001/api/v1/logout', {  // Cambiar IP Local: 192.168.1.89
+      await axios.delete(`${NGROK_URL}/api/v1/logout`, {  // Cambiar IP Local: 192.168.1.30
         headers: { Authorization: `${JWT_TOKEN}` }, 
       });
 

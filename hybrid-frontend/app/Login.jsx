@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import pintpalLogo from '../assets/pintpal-logo.png'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { NGROK_URL } from '@env';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const Login = () => {
   const navigation = useNavigation();
 
   const handleSubmit = () => {
-    axios.post('http://192.168.1.89:3001/api/v1/login', { user: { email, password } })  // Cambiar IP Local: 192.168.1.89
+    axios.post(`${NGROK_URL}/api/v1/login`, { user: { email, password } })  // Cambiar IP Local: 192.168.1.30
       .then(response => {
         const JWT_TOKEN = response.headers['authorization'];
         const CURRENT_USER_ID = response.data.status.data.user.id;

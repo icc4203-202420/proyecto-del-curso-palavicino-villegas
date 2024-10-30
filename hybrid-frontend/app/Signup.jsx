@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { NGROK_URL } from '@env';
 
 const Signup = () => {
   const [firstName, setFirstName] = useState('');
@@ -19,13 +20,13 @@ const Signup = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    axios.get('http://192.168.1.89:3001/api/v1/countries')  // Cambiar IP Local: 192.168.1.89
+    axios.get(`${NGROK_URL}/api/v1/countries`)  // Cambiar IP Local: 192.168.1.30
       .then(response => setCountries(response.data))
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
 
   const handleSubmit = () => {
-    axios.post('http://192.168.1.89:3001/api/v1/signup', {  // Cambiar IP Local: 192.168.1.89
+    axios.post(`${NGROK_URL}/api/v1/signup`, {  // Cambiar IP Local: 192.168.1.30
       user: {
         first_name: firstName,
         last_name: lastName,

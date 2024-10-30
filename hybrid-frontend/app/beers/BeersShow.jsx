@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Divider } from 'react-native-paper'; 
 import { Rating } from 'react-native-ratings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { NGROK_URL } from '@env';
 
 function userReviewsFirst(reviews, currentUserId) {
   const userReviews = reviews.filter(review => review.user_id === parseInt(currentUserId));
@@ -44,7 +44,7 @@ const BeersShow = ({ route }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    axios.get(`http://192.168.1.89:3001/api/v1/beers/${id}`)  // Cambiar IP Local: 192.168.1.89
+    axios.get(`${NGROK_URL}/api/v1/beers/${id}`)  // Cambiar IP Local: 192.168.1.30
       .then(response => setBeer(response.data.beer))
       .catch(error => console.error(error));
 
@@ -53,7 +53,7 @@ const BeersShow = ({ route }) => {
 
   const fetchReviews = async () => {
     const userId = await AsyncStorage.getItem('CURRENT_USER_ID');
-    axios.get(`http://192.168.1.89:3001/api/v1/beers/${id}/reviews`)  // Cambiar IP Local: 192.168.1.89
+    axios.get(`${NGROK_URL}/api/v1/beers/${id}/reviews`)  // Cambiar IP Local: 192.168.1.30
       .then(response => {
         dispatch({ 
           type: 'FETCH_REVIEWS_SUCCESS', 
@@ -72,7 +72,7 @@ const BeersShow = ({ route }) => {
 
     const userId = await AsyncStorage.getItem('CURRENT_USER_ID');
     if (userId) {
-      await axios.post(`http://192.168.1.89:3001/api/v1/beers/${beer.id}/reviews`, { // Cambiar IP Local: 192.168.1.89
+      await axios.post(`${NGROK_URL}/api/v1/beers/${beer.id}/reviews`, { // Cambiar IP Local: 192.168.1.30
         review, 
         user_id: userId 
       });
