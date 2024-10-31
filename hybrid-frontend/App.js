@@ -19,6 +19,9 @@ import BeersShow from './app/beers/BeersShow';
 import BarsIndex from './app/bars/BarsIndex';
 import BarsShow from './app/bars/BarsShow';
 
+// Events
+import EventsShow from './app/events/EventsShow';
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -39,6 +42,10 @@ export default function App() {
         {/* Bars views */}
         <Stack.Screen name="Bars" component={BarsIndex} />
         <Stack.Screen name="BarsShow" component={BarsShow} options={{ title: 'Bar Details' }} />
+
+        {/* Events views */}
+        <Stack.Screen name="EventsShow" component={EventsShow} options={{ title: 'Event Details' }} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
