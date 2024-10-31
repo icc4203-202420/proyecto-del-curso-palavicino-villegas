@@ -45,7 +45,7 @@ const BarsIndex = () => {
         data={filteredBars}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate('BarDetails', { id: item.id })}>
+          <TouchableOpacity onPress={() => navigation.navigate('BarsShow', { id: item.id })}>
             <View style={styles.barContainer}>
               <Text style={styles.barName}>{item.name}</Text>
               <Text style={styles.barAddress}>{item.address.line1}, {item.address.city}</Text>
