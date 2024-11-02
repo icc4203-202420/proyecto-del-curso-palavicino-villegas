@@ -65,11 +65,11 @@ export default function SocialShow() {
   }, []);
 
   const handleAddFriend = async () => {
-    if (!currentUserId || !selectedEvent) return;
+    if (!currentUserId) return;
     setLoading(true);
     try {
       await axios.post(`${NGROK_URL}/api/v1/users/${currentUserId}/friendships`, {
-        friendship: { friend_id: id, event_id: selectedEvent.id },
+        friendship: { friend_id: id, event_id: selectedEvent ? selectedEvent.id : null },
       });
       setIsFriend(true);
       loadFriendshipData(currentUserId);
