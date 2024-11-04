@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Image, FlatList, StyleSheet, Alert, ScrollView } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { NGROK_URL } from '@env';
-import * as SecureStore from 'expo-secure-store'; 
 import barsHomeImage from '../../assets/bars_home.png';
 import EventImageCard from './EventImageCard';
+import * as SecureStore from 'expo-secure-store';
 
 const EventsShow = () => {
   const [event, setEvent] = useState(null);
@@ -14,9 +14,10 @@ const EventsShow = () => {
   const [eventPictures, setEventPictures] = useState([]);
   const [checkingIn, setCheckingIn] = useState(false);
   const route = useRoute();
+  const navigation = useNavigation();
   const { id } = route.params;
 
-  const fetchEventData = () => {
+  const fetchEventData = useCallback(() => {
     axios.get(`${NGROK_URL}/api/v1/events/${id}`)
       .then(response => {
         setEvent(response.data);
@@ -26,11 +27,17 @@ const EventsShow = () => {
       .catch(error => {
         console.error('Error fetching event:', error);
       });
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchEventData();
-  }, [id]);
+  }, [fetchEventData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchEventData();
+    }, [fetchEventData])
+  );
 
   const handleCheckIn = async () => {
     setCheckingIn(true);
@@ -49,51 +56,8 @@ const EventsShow = () => {
     }
   };
 
-  const handleAddPhoto = async () => {
-    const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      const fileName = uri.split('/').pop();
-      const fileExtension = fileName.split('.').pop();
-
-      const mimeTypes = {
-        jpg: "image/jpeg",
-        jpeg: "image/jpeg",
-        png: "image/png",
-        heic: "image/heic",
-      };
-      const mimeType = mimeTypes[fileExtension] || "image/png";
-
-      const formData = new FormData();
-      formData.append("event_picture[event_id]", id);
-      formData.append("event_picture[user_id]", parseInt(userId, 10));
-      formData.append("event_picture[description]", "Event photo description");
-      formData.append("event_picture[tagged_friends]", []);
-      formData.append("event_picture[picture]", {
-        uri,
-        type: mimeType,
-        name: fileName,
-      });
-
-      axios.post(`${NGROK_URL}/api/v1/events/${id}/event_pictures`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      })
-      .then(() => {
-        Alert.alert('Photo Uploaded', 'The photo has been successfully uploaded.');
-        fetchEventData(); 
-      })
-      .catch(error => {
-        console.error('Error uploading photo:', error);
-        Alert.alert('Error', 'Failed to upload photo.');
-      });
-    }
+  const handleAddPhoto = () => {
+    navigation.navigate('EventImageForm', { eventId: id });
   };
 
   if (!event) {
