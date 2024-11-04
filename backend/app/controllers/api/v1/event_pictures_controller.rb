@@ -38,7 +38,7 @@ class API::V1::EventPicturesController < ApplicationController
           to: friend.expo_push_token,
           title: "¡Has sido etiquetado en una foto!",
           body: "#{event_picture.user.handle} te ha etiquetado en una foto.",
-          data: { screen: "EventsShow", event_id: event_picture.event_id }
+          data: { screen: "EventImageShow", event_id: event_picture.event_id, picture_id: event_picture.id }
         )
 
         if notification_sent
