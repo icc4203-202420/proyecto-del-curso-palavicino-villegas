@@ -25,6 +25,12 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c798aa01-2316-451f-984f-2cc7f0edfefb"
+      }
+    },
+    "owner": "franco17"
   }
 }

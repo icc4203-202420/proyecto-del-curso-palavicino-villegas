@@ -36,6 +36,9 @@ Rails.application.routes.draw do
         resources :reviews, only: [:index, :create, :show]
       end
       resources :users do
+        collection do
+          post 'update_push_token', to: 'users#update_push_token'
+        end
         resources :reviews, only: [:index]
         resources :friendships, param: :friend_id, only: [:index, :create, :show, :update]
       end

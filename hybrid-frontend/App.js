@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import NotificationListener from './app/NotificationListener'; 
 
 // CheckTokenStorage
 import CheckTokenStorage from './app/CheckTokenStorage';
@@ -36,6 +37,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
+      <NotificationListener /> 
       <Stack.Navigator initialRouteName="CheckTokenStorage">
 
         {/* Check Token Storage */}
