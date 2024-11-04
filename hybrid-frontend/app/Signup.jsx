@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import * as SecureStore from 'expo-secure-store'; // Usar SecureStore
+import * as SecureStore from 'expo-secure-store';
 import { Picker } from '@react-native-picker/picker';
 import { NGROK_URL } from '@env';
+import { savePushToken } from './notifications'; 
 
 const Signup = () => {
   const [firstName, setFirstName] = useState('');
@@ -26,34 +27,41 @@ const Signup = () => {
   }, []);
 
   const handleSubmit = async () => {
-    const response = await axios.post(`${NGROK_URL}/api/v1/signup`, {
-      user: {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        handle,
-        password,
-        country: selectedCountry,
-        line1,
-        line2,
-        city,
-      },
-    });
+    try {
+      const response = await axios.post(`${NGROK_URL}/api/v1/signup`, {
+        user: {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          handle,
+          password,
+          country: selectedCountry,
+          line1,
+          line2,
+          city,
+        },
+      });
 
-    const JWT_TOKEN = response.headers['authorization'];
-    const CURRENT_USER_ID = response.data.data.id;
+      const JWT_TOKEN = response.headers['authorization'];
+      const CURRENT_USER_ID = response.data.data.id;
 
-    if (JWT_TOKEN) {
-      await SecureStore.setItemAsync('JWT_TOKEN', JWT_TOKEN);
+      if (JWT_TOKEN) {
+        await SecureStore.setItemAsync('JWT_TOKEN', JWT_TOKEN);
+      }
+
+      if (CURRENT_USER_ID) {
+        await SecureStore.setItemAsync('CURRENT_USER_ID', CURRENT_USER_ID.toString());
+      }
+
+      await savePushToken();
+
+      Alert.alert('Signup Successful!');
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Error during signup:', error);
+      Alert.alert('Signup Failed', 'Please check your information.');
     }
-
-    if (CURRENT_USER_ID) {
-      await SecureStore.setItemAsync('CURRENT_USER_ID', CURRENT_USER_ID.toString());
-    }
-
-    Alert.alert('Signup Successful!');
-    navigation.navigate('Home');
-  };  
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

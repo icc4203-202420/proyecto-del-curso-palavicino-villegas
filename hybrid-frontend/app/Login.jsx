@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import pintpalLogo from '../assets/pintpal-logo.png'; 
 import * as SecureStore from 'expo-secure-store'; 
 import { NGROK_URL } from '@env';
+import { savePushToken } from './notifications';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,17 +14,25 @@ const Login = () => {
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
-  const response = await axios.post(`${NGROK_URL}/api/v1/login`, { user: { email, password } });
-  const JWT_TOKEN = response.headers['authorization'];
-  const CURRENT_USER_ID = response.data.status.data.user.id;
+    try {
+      const response = await axios.post(`${NGROK_URL}/api/v1/login`, { user: { email, password } });
+      const JWT_TOKEN = response.headers['authorization'];
+      const CURRENT_USER_ID = response.data.status.data.user.id;
 
-  if (JWT_TOKEN && CURRENT_USER_ID) {
-    await SecureStore.setItemAsync('JWT_TOKEN', JWT_TOKEN);
-    await SecureStore.setItemAsync('CURRENT_USER_ID', CURRENT_USER_ID.toString());
-    Alert.alert('Login Successful!');
-    navigation.navigate('Home'); 
-  }
-  };  
+      if (JWT_TOKEN && CURRENT_USER_ID) {
+        await SecureStore.setItemAsync('JWT_TOKEN', JWT_TOKEN);
+        await SecureStore.setItemAsync('CURRENT_USER_ID', CURRENT_USER_ID.toString());
+        
+        await savePushToken();
+
+        Alert.alert('Login Successful!');
+        navigation.navigate('Home');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      Alert.alert('Login Failed', 'Please check your credentials.');
+    }
+  };
 
   return (
     <View style={styles.container}>
