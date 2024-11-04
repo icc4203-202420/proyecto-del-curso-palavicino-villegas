@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Image, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Image, FlatList, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { NGROK_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import barsHomeImage from '../../assets/bars_home.png';
+import EventImageCard from './EventImageCard';
 
 const EventsShow = () => {
   const [event, setEvent] = useState(null);
   const [users, setUsers] = useState([]);
   const [eventPictures, setEventPictures] = useState([]);
   const [checkingIn, setCheckingIn] = useState(false);
-  const navigation = useNavigation();
   const route = useRoute();
   const { id } = route.params;
 
-  useEffect(() => {
+  const fetchEventData = () => {
     axios.get(`${NGROK_URL}/api/v1/events/${id}`)
       .then(response => {
         setEvent(response.data);
@@ -26,6 +26,10 @@ const EventsShow = () => {
       .catch(error => {
         console.error('Error fetching event:', error);
       });
+  };
+
+  useEffect(() => {
+    fetchEventData();
   }, [id]);
 
   const handleCheckIn = async () => {
@@ -55,27 +59,40 @@ const EventsShow = () => {
     });
 
     if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      const fileName = uri.split('/').pop();
+      const fileExtension = fileName.split('.').pop();
+
+      const mimeTypes = {
+        jpg: "image/jpeg",
+        jpeg: "image/jpeg",
+        png: "image/png",
+        heic: "image/heic",
+      };
+      const mimeType = mimeTypes[fileExtension] || "image/png";
+
       const formData = new FormData();
       formData.append("event_picture[event_id]", id);
       formData.append("event_picture[user_id]", parseInt(userId, 10));
       formData.append("event_picture[description]", "Event photo description");
       formData.append("event_picture[tagged_friends]", []);
       formData.append("event_picture[picture]", {
-        uri: result.uri,
-        type: "image/jpeg",
-        name: "photo.jpg"
+        uri,
+        type: mimeType,
+        name: fileName,
       });
 
       axios.post(`${NGROK_URL}/api/v1/events/${id}/event_pictures`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       })
-      .then(response => {
+      .then(() => {
         Alert.alert('Photo Uploaded', 'The photo has been successfully uploaded.');
-          axios.get(`${NGROK_URL}/api/v1/events/${id}`)
-          .then(response => {
-            setEventPictures(response.data.event_pictures);
-          })
+        fetchEventData(); 
       })
+      .catch(error => {
+        console.error('Error uploading photo:', error);
+        Alert.alert('Error', 'Failed to upload photo.');
+      });
     }
   };
 
@@ -84,8 +101,9 @@ const EventsShow = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Image source={barsHomeImage} style={styles.image} />
+      
       <View style={styles.detailsContainer}>
         <Text style={styles.hostedBy}>Hosted by {event.bar.name}</Text>
         <Text style={styles.date}>
@@ -134,25 +152,21 @@ const EventsShow = () => {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={eventPictures}
-        renderItem={({ item }) => {
-          console.log(item);
-          return (
-            <Image source={{ uri: item.url }} style={styles.eventImage} />
-          );
-        }}
-        horizontal
-      />
-    </View>
+      <View>
+        <FlatList
+          data={eventPictures}
+          renderItem={({ item }) => (
+            <EventImageCard pictureUrl={item.picture.url} pictureDescription={item.description} userFirstName={item.user.first_name} userLastName={item.user.last_name} />
+          )}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  backText: { fontSize: 18, color: 'black' },
-  title: { fontSize: 20, fontWeight: 'bold' },
+  scrollContainer: { flexGrow: 1, padding: 16 },
   image: { width: '100%', height: 200, borderRadius: 16, marginTop: 16 },
   detailsContainer: { marginVertical: 16 },
   hostedBy: { fontSize: 16, color: 'gray' },
@@ -167,7 +181,6 @@ const styles = StyleSheet.create({
   location: { color: 'gray', marginTop: 5 },
   photosHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20 },
   addPhotoText: { fontSize: 24, color: 'blue', marginLeft: 8 },
-  eventImage: { width: 100, height: 100, borderRadius: 8, marginRight: 8 },
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });
 
