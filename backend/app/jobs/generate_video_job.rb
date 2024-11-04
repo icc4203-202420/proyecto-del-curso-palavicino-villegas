@@ -10,5 +10,7 @@ class GenerateVideoJob < ApplicationJob
 
     system("ffmpeg -framerate 1/3 -pattern_type glob -i '#{images_dir}/*.jpg' -c:v libx264 '#{video_path}'")
     event.video_url.attach(io: File.open(video_path), filename: "event_#{event.id}.mp4", content_type: "video/mp4")
+
+    event.save!
   end
 end

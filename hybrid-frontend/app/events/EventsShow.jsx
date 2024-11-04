@@ -12,6 +12,7 @@ const EventsShow = () => {
   const [event, setEvent] = useState(null);
   const [users, setUsers] = useState([]);
   const [eventPictures, setEventPictures] = useState([]);
+  const [videoLoading, setVideoLoading] = useState(false);
   const [checkingIn, setCheckingIn] = useState(false);
   const route = useRoute();
   const navigation = useNavigation();
@@ -21,7 +22,7 @@ const EventsShow = () => {
     axios.get(`${NGROK_URL}/api/v1/events/${id}`)
       .then(response => {
         setEvent(response.data);
-        // console.log(response.data);
+        console.log(response.data);
         setUsers(response.data.users);
         setEventPictures(response.data.event_pictures);
       })

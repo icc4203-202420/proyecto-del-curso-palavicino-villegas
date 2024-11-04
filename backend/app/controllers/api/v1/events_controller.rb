@@ -45,6 +45,8 @@ class API::V1::EventsController < ApplicationController
       }
     )
 
+    event_data[:video_url_path] = @event.video_url_path
+
     if @event.flyer.attached?
       event_data.merge!(
         flyer_url: url_for(@event.flyer),

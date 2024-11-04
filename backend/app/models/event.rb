@@ -10,6 +10,10 @@ class Event < ApplicationRecord
 
   has_many :event_pictures, dependent: :destroy
 
+  def video_url_path
+    video_url.attached? ? Rails.application.routes.url_helpers.rails_blob_url(video_url, only_path: true) : nil
+  end
+
   def thumbnail
     flyer.variant(resize_to_limit: [200, nil]).processed
   end
