@@ -27,9 +27,15 @@ Rails.application.routes.draw do
       end
 
       resources :events do
+
         collection do
-          get 'all_events', to: 'events#all_events'  
+          get 'all_events', to: 'events#all_events'
         end
+
+        member do
+          post 'generate_video'
+        end
+
       end
 
       resources :beers do

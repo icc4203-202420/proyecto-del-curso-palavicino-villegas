@@ -86,12 +86,18 @@ class API::V1::EventsController < ApplicationController
     end
   end
 
+  def generate_video
+    event = Event.find(params[:id])
+    GenerateVideoJob.perform_later(event)
+  end
+
   private
 
   def set_event
     @event = Event.find_by(id: params[:id])
     render json: { error: 'Event not found' }, status: :not_found unless @event
   end
+
 
   def event_params
     params.require(:event).permit(

@@ -42,6 +42,7 @@ const EventsShow = () => {
   const handleCheckIn = async () => {
     setCheckingIn(true);
     try {
+      // const userId = 15;
       const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       await axios.post(`${NGROK_URL}/api/v1/attendances`, {
         user_id: parseInt(userId, 10),
@@ -59,6 +60,17 @@ const EventsShow = () => {
   const handleAddPhoto = () => {
     navigation.navigate('EventImageForm', { eventId: id });
   };
+
+  const handleGenerateVideo = async () => {
+    try {
+      await axios.post(`${NGROK_URL}/api/v1/events/${id}/generate_video`);
+      Alert.alert('Success', 'Video generation started!');
+    } catch (error) {
+      console.error('Error generating video:', error);
+      Alert.alert('Error', 'There was an issue starting video generation.');
+    }
+  };
+
 
   if (!event) {
     return <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />;
@@ -125,6 +137,10 @@ const EventsShow = () => {
           keyExtractor={(item) => item.id.toString()}
         />
       </View>
+
+      <TouchableOpacity style={styles.generateVideoButton} onPress={handleGenerateVideo}>
+        <Text style={styles.generateVideoText}>Generate Video</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -146,6 +162,14 @@ const styles = StyleSheet.create({
   photosHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20 },
   addPhotoText: { fontSize: 24, color: 'blue', marginLeft: 8 },
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  generateVideoButton: { 
+    backgroundColor: '#007bff', 
+    padding: 10, 
+    borderRadius: 5, 
+    marginTop: 20,
+    alignItems: 'center'
+  },
+  generateVideoText: { color: 'black', fontWeight: 'bold' },
 });
 
 export default EventsShow;

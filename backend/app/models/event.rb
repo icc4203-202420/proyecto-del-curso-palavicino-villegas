@@ -5,6 +5,9 @@ class Event < ApplicationRecord
 
   has_one_attached :flyer
 
+  # Creo que ya no es necesario (o quizá sí para acceder al video desde el front)
+  has_one_attached :video_url
+
   has_many :event_pictures, dependent: :destroy
 
   def thumbnail

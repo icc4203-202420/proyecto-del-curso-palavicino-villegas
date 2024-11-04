@@ -18,6 +18,7 @@ const EventImageForm = () => {
 
   useEffect(() => {
     const fetchFriends = async () => {
+      // const userId = 15;
       const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       if (userId) {
         try {
@@ -58,9 +59,11 @@ const EventImageForm = () => {
     }
     setUploading(true);
     try {
+      // const userId = 15;
       const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       const uriParts = image.split('.');
       const fileType = uriParts[uriParts.length - 1];
+      const uniqueName = `photo_${Date.now()}`;
 
       const formData = new FormData();
       formData.append("event_picture[event_id]", eventId);
@@ -70,7 +73,7 @@ const EventImageForm = () => {
       formData.append("event_picture[picture]", {
         uri: image,
         type: `image/${fileType}`,
-        name: `photo.${fileType}`,
+        name: `${uniqueName}.${fileType}`,
       });
 
       await axios.post(`${NGROK_URL}/api/v1/event_pictures`, formData, {
