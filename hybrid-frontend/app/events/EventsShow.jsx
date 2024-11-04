@@ -21,6 +21,7 @@ const EventsShow = () => {
     axios.get(`${NGROK_URL}/api/v1/events/${id}`)
       .then(response => {
         setEvent(response.data);
+        // console.log(response.data);
         setUsers(response.data.users);
         setEventPictures(response.data.event_pictures);
       })
@@ -42,8 +43,8 @@ const EventsShow = () => {
   const handleCheckIn = async () => {
     setCheckingIn(true);
     try {
-      // const userId = 15;
-      const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
+      const userId = 15;
+      // const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       await axios.post(`${NGROK_URL}/api/v1/attendances`, {
         user_id: parseInt(userId, 10),
         event_id: id,
