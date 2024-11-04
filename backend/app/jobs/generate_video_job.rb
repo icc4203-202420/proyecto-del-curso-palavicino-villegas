@@ -12,5 +12,30 @@ class GenerateVideoJob < ApplicationJob
     event.video_url.attach(io: File.open(video_path), filename: "event_#{event.id}.mp4", content_type: "video/mp4")
 
     event.save!
+
+    notify_participants(event)
+  end
+
+  def notify_participants(event)
+    event.users.each do |user|
+      notification_sent = false
+
+      if user.expo_push_token.present?
+        notification_sent = PushNotificationService.send_notification(
+          to: user.expo_push_token,
+          title: "¡Video del evento '#{event.name}'!",
+          body: "Se ha generado un video del evento '#{event.name}'. ¡Toca para verlo!",
+          data: { screen: "EventsShow", event_id: event.id }
+        )
+
+        if notification_sent
+          Rails.logger.info("Notificación enviada con éxito a #{user.handle}")
+        else
+          Rails.logger.error("Error al enviar la notificación a #{user.handle}")
+        end
+      else
+        Rails.logger.warn("El usuario #{user.handle} no tiene expo_push_token, no se envió notificación")
+      end
+    end
   end
 end

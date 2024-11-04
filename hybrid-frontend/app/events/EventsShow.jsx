@@ -150,7 +150,7 @@ const EventsShow = () => {
       </View>
   
       
-      {videoUrl ? (
+      {videoUrl && videoUrl.endsWith('.mp4') ? (
         <Video
           source={{ uri: videoUrl }}
           style={styles.video}
