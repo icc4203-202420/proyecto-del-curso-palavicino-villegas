@@ -7,11 +7,13 @@ import { NGROK_URL } from '@env';
 import barsHomeImage from '../../assets/bars_home.png';
 import EventImageCard from './EventImageCard';
 import * as SecureStore from 'expo-secure-store';
+import { Video } from 'expo-av';
 
 const EventsShow = () => {
   const [event, setEvent] = useState(null);
   const [users, setUsers] = useState([]);
   const [eventPictures, setEventPictures] = useState([]);
+  const [videoUrl, setVideoUrl] = useState('');
   const [videoLoading, setVideoLoading] = useState(false);
   const [checkingIn, setCheckingIn] = useState(false);
   const route = useRoute();
@@ -22,7 +24,8 @@ const EventsShow = () => {
     axios.get(`${NGROK_URL}/api/v1/events/${id}`)
       .then(response => {
         setEvent(response.data);
-        console.log(response.data);
+        setVideoUrl(`${NGROK_URL}${response.data.video_url_path}`);
+        console.log(`${NGROK_URL}${response.data.video_url_path}`);
         setUsers(response.data.users);
         setEventPictures(response.data.event_pictures);
       })
@@ -147,9 +150,26 @@ const EventsShow = () => {
       </View>
   
       
-      <TouchableOpacity style={styles.generateVideoButton} onPress={handleGenerateVideo}>
-        <Text style={styles.generateVideoText}>Generate Video</Text>
-      </TouchableOpacity>
+      {videoUrl ? (
+        <Video
+          source={{ uri: videoUrl }}
+          style={styles.video}
+          useNativeControls
+          resizeMode="contain"
+        />
+      ) : (
+        <TouchableOpacity 
+          style={styles.generateVideoButton} 
+          onPress={handleGenerateVideo} 
+          disabled={videoLoading}
+        >
+          {videoLoading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.generateVideoText}>Generate Video</Text>
+          )}
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };
@@ -179,6 +199,11 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   generateVideoText: { color: 'black', fontWeight: 'bold' },
+  video: {
+    width: '100%',
+    height: 300,
+    marginTop: 20,
+  },
 });
 
 export default EventsShow;
