@@ -3,6 +3,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+// CheckTokenStorage
+import CheckTokenStorage from './app/CheckTokenStorage';
+
 // Home
 import Home from './app/Home';
 
@@ -32,7 +35,11 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="CheckTokenStorage">
+
+        {/* Check Token Storage */}
+        <Stack.Screen name="CheckTokenStorage" component={CheckTokenStorage} options={{ headerShown: false }} />
+
         <Stack.Screen name="Home" component={Home} />
         
         {/* Authentication views */}

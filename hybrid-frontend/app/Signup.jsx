@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; // Usar SecureStore
 import { Picker } from '@react-native-picker/picker';
 import { NGROK_URL } from '@env';
 
@@ -20,13 +20,13 @@ const Signup = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    axios.get(`${NGROK_URL}/api/v1/countries`)  // Cambiar IP Local: 192.168.1.30
+    axios.get(`${NGROK_URL}/api/v1/countries`)
       .then(response => setCountries(response.data))
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
 
-  const handleSubmit = () => {
-    axios.post(`${NGROK_URL}/api/v1/signup`, {  // Cambiar IP Local: 192.168.1.30
+  const handleSubmit = async () => {
+    const response = await axios.post(`${NGROK_URL}/api/v1/signup`, {
       user: {
         first_name: firstName,
         last_name: lastName,
@@ -38,27 +38,22 @@ const Signup = () => {
         line2,
         city,
       },
-    })
-      .then(response => {
-        const JWT_TOKEN = response.headers['authorization'];
-        const CURRENT_USER_ID = response.data.data.id;
+    });
 
-        if (JWT_TOKEN) {
-          AsyncStorage.setItem('JWT_TOKEN', JWT_TOKEN);
-        }
+    const JWT_TOKEN = response.headers['authorization'];
+    const CURRENT_USER_ID = response.data.data.id;
 
-        if (CURRENT_USER_ID) {
-          AsyncStorage.setItem('CURRENT_USER_ID', CURRENT_USER_ID.toString());
-        }
+    if (JWT_TOKEN) {
+      await SecureStore.setItemAsync('JWT_TOKEN', JWT_TOKEN);
+    }
 
-        Alert.alert('Signup Successful!');
-        navigation.navigate('Login');
-      })
-      .catch(error => {
-        console.error('Error during signup:', error);
-        Alert.alert('Error during signup', 'Please check your information.');
-      });
-  };
+    if (CURRENT_USER_ID) {
+      await SecureStore.setItemAsync('CURRENT_USER_ID', CURRENT_USER_ID.toString());
+    }
+
+    Alert.alert('Signup Successful!');
+    navigation.navigate('Home');
+  };  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

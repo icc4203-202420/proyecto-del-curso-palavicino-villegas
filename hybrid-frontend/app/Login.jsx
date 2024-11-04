@@ -3,7 +3,7 @@ import { View, TextInput, Button, Text, StyleSheet, Image, Alert } from 'react-n
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import pintpalLogo from '../assets/pintpal-logo.png'; 
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import * as SecureStore from 'expo-secure-store'; 
 import { NGROK_URL } from '@env';
 
 const Login = () => {
@@ -12,28 +12,18 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
-  const handleSubmit = () => {
-    axios.post(`${NGROK_URL}/api/v1/login`, { user: { email, password } })  // Cambiar IP Local: 192.168.1.30
-      .then(response => {
-        const JWT_TOKEN = response.headers['authorization'];
-        const CURRENT_USER_ID = response.data.status.data.user.id;
+  const handleSubmit = async () => {
+  const response = await axios.post(`${NGROK_URL}/api/v1/login`, { user: { email, password } });
+  const JWT_TOKEN = response.headers['authorization'];
+  const CURRENT_USER_ID = response.data.status.data.user.id;
 
-        if (JWT_TOKEN) {
-          AsyncStorage.setItem('JWT_TOKEN', JWT_TOKEN);
-        }
-
-        if (CURRENT_USER_ID) {
-          AsyncStorage.setItem('CURRENT_USER_ID', CURRENT_USER_ID.toString());
-        }
-
-        Alert.alert('Login Successful!');
-        navigation.navigate('Home'); 
-      })
-      .catch(error => {
-        console.error('Error logging in:', error);
-        Alert.alert('Error de inicio de sesión', 'Verifica tus credenciales.');
-      });
-  };
+  if (JWT_TOKEN && CURRENT_USER_ID) {
+    await SecureStore.setItemAsync('JWT_TOKEN', JWT_TOKEN);
+    await SecureStore.setItemAsync('CURRENT_USER_ID', CURRENT_USER_ID.toString());
+    Alert.alert('Login Successful!');
+    navigation.navigate('Home'); 
+  }
+  };  
 
   return (
     <View style={styles.container}>

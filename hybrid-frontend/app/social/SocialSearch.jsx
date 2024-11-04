@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TextInput, FlatList, ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import SocialSearchCard from './SocialSearchCard';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { NGROK_URL } from '@env';
 
@@ -15,29 +15,30 @@ const SocialSearch = () => {
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      const storedUserId = await AsyncStorage.getItem('CURRENT_USER_ID');
-      if (storedUserId) {
+    const storedUserId = await SecureStore.getItemAsync('CURRENT_USER_ID');
+    if (storedUserId) {
         setCurrentUserId(storedUserId);
-      }
+    }
     };
     fetchCurrentUser();
   }, []);
 
   useEffect(() => {
-    if (currentUserId) {
-      setLoading(true);
-      axios.get(`${NGROK_URL}/api/v1/users`)
-        .then(response => {
+    const fetchUsers = async () => {
+      if (currentUserId) {
+        setLoading(true);
+        try {
+          const response = await axios.get(`${NGROK_URL}/api/v1/users`);
           const filteredUsers = response.data.users.filter(user => user.id !== parseInt(currentUserId));
           setUsers(filteredUsers);
-        })
-        .catch(error => {
+        } catch (error) {
           console.error('Error al obtener los usuarios:', error);
-        })
-        .finally(() => {
+        } finally {
           setLoading(false);
-        });
-    }
+        }
+      }
+    };
+    fetchUsers();
   }, [currentUserId]);
 
   const filteredUsers = searchText.trim() === '' ? [] : users.filter(user =>

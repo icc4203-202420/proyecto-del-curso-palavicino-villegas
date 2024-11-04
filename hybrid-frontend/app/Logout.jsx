@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; // Usar SecureStore
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { NGROK_URL } from '@env';
@@ -9,29 +9,23 @@ const Logout = () => {
   const navigation = useNavigation();
 
   const handleLogout = async () => {
-    try {
-      const JWT_TOKEN = await AsyncStorage.getItem('JWT_TOKEN');
+  const JWT_TOKEN = await SecureStore.getItemAsync('JWT_TOKEN');
 
-      if (!JWT_TOKEN) {
-        Alert.alert('Error', 'No token found, please log in again.');
-        return;
-      }
+  if (!JWT_TOKEN) {
+    Alert.alert('Error', 'No token found, please log in again.');
+    return;
+  }
 
-      await axios.delete(`${NGROK_URL}/api/v1/logout`, {  // Cambiar IP Local: 192.168.1.30
-        headers: { Authorization: `${JWT_TOKEN}` }, 
-      });
+  await axios.delete(`${NGROK_URL}/api/v1/logout`, {
+    headers: { Authorization: `${JWT_TOKEN}` },
+  });
 
-      // Eliminar JWT_TOKEN y CURRENT_USER_ID del AsyncStorage
-      await AsyncStorage.removeItem('JWT_TOKEN');
-      await AsyncStorage.removeItem('CURRENT_USER_ID');
+  await SecureStore.deleteItemAsync('JWT_TOKEN');
+  await SecureStore.deleteItemAsync('CURRENT_USER_ID');
 
-      Alert.alert('Logged out successfully!');
-      navigation.navigate('Login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-      Alert.alert('Error', 'Failed to log out.');
-    }
-  };
+  Alert.alert('Logged out successfully!');
+  navigation.navigate('Login'); 
+  };  
 
   return (
     <View style={styles.container}>

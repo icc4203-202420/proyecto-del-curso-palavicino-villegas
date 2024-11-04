@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput,
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Avatar, Button, Icon } from 'react-native-elements';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { NGROK_URL } from '@env';
 
 export default function SocialShow() {
@@ -21,28 +21,25 @@ export default function SocialShow() {
 
   useEffect(() => {
     const fetchUserIdAndFriendshipData = async () => {
-      const storedUserId = await AsyncStorage.getItem('CURRENT_USER_ID');
-      if (storedUserId) {
+    const storedUserId = await SecureStore.getItemAsync('CURRENT_USER_ID');
+    if (storedUserId) {
         setCurrentUserId(storedUserId);
         loadFriendshipData(storedUserId);
-      }
+    }
     };
     fetchUserIdAndFriendshipData();
   }, [id]);
 
-  const loadFriendshipData = (userId) => {
+  const loadFriendshipData = async (userId) => {
     if (userId) {
-      axios.get(`${NGROK_URL}/api/v1/users/${userId}/friendships/${id}`)
-        .then(response => {
-          setIsFriend(response.data.is_friend);
-          const eventId = response.data.friendship ? response.data.friendship.event_id : null;
-          if (eventId && events.length > 0) {
-            const selected = events.find(event => event.id === eventId);
-            setSelectedEvent(selected || null);
-            setSearchText(selected ? selected.name : '');
-          }
-        })
-        .catch(error => console.error('Error fetching friendship data:', error));
+    const response = await axios.get(`${NGROK_URL}/api/v1/users/${userId}/friendships/${id}`);
+    setIsFriend(response.data.is_friend);
+    const eventId = response.data.friendship ? response.data.friendship.event_id : null;
+    if (eventId && events.length > 0) {
+        const selected = events.find(event => event.id === eventId);
+        setSelectedEvent(selected || null);
+        setSearchText(selected ? selected.name : '');
+    }
     }
   };
 
@@ -59,9 +56,7 @@ export default function SocialShow() {
 
   useEffect(() => {
     axios.get(`${NGROK_URL}/api/v1/events/all_events`)
-      .then(response => {
-        setEvents(response.data);
-      })
+      .then(response => setEvents(response.data))
   }, []);
 
   const handleAddFriend = async () => {
@@ -92,8 +87,8 @@ export default function SocialShow() {
 
     await axios.patch(`${NGROK_URL}/api/v1/users/${currentUserId}/friendships/${id}`, {
         friendship: { event_id: event.id },
-      });
-      loadFriendshipData(currentUserId);
+    });
+    loadFriendshipData(currentUserId);
   };
 
   const handleSearch = (text) => {
