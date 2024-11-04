@@ -52,7 +52,7 @@ Rails.application.routes.draw do
         resources :event_pictures, only: [:new, :create]
       end
 
-      resources :event_pictures, only: [:new, :create]
+      resources :event_pictures
       resources :attendances
     end
   end

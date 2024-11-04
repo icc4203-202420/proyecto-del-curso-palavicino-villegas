@@ -25,6 +25,7 @@ import BarsShow from './app/bars/BarsShow';
 // Events
 import EventsShow from './app/events/EventsShow';
 import EventImageForm from './app/events/EventImageForm';
+import EventImageShow from './app/events/EventImageShow';
 
 // Social
 import SocialIndex from './app/social/SocialIndex';
@@ -59,6 +60,7 @@ export default function App() {
         {/* Events views */}
         <Stack.Screen name="EventsShow" component={EventsShow} options={{ title: 'Event Details' }}/>
         <Stack.Screen name="EventImageForm" component={EventImageForm} options={{ title: 'Upload Photo' }}/>
+        <Stack.Screen name="EventImageShow" component={EventImageShow} options={{ title: 'Image Details' }}/>
 
         {/* Social views */}
         <Stack.Screen name="Social" component={SocialIndex} options={{ title: 'Social' }} />

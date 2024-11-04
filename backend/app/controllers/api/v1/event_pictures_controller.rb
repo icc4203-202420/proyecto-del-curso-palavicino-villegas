@@ -9,6 +9,16 @@ class API::V1::EventPicturesController < ApplicationController
     end
   end
 
+  def show
+    @event_picture =  EventPicture.find(params[:id])
+    if @event_picture
+      render json: { event_picture: @event_picture }, status: :ok
+    else
+      render json: { error: "Event_picture not found" }, status: :not_found
+    end
+  end
+
+
   private
 
   def event_picture_params

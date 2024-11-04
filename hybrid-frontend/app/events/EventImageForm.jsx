@@ -18,8 +18,7 @@ const EventImageForm = () => {
 
   useEffect(() => {
     const fetchFriends = async () => {
-      const userId = 15;
-      // const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
+      const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       if (userId) {
         try {
           const response = await axios.get(`${NGROK_URL}/api/v1/users/${userId}`);
@@ -59,8 +58,7 @@ const EventImageForm = () => {
     }
     setUploading(true);
     try {
-      const userId = 15;
-      // const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
+      const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       const uriParts = image.split('.');
       const fileType = uriParts[uriParts.length - 1];
       const uniqueName = `photo_${Date.now()}`;

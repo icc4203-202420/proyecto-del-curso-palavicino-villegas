@@ -43,8 +43,7 @@ const EventsShow = () => {
   const handleCheckIn = async () => {
     setCheckingIn(true);
     try {
-      const userId = 15;
-      // const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
+      const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       await axios.post(`${NGROK_URL}/api/v1/attendances`, {
         user_id: parseInt(userId, 10),
         event_id: id,
@@ -133,12 +132,20 @@ const EventsShow = () => {
         <FlatList
           data={eventPictures}
           renderItem={({ item }) => (
-            <EventImageCard pictureUrl={item.picture.url} pictureDescription={item.description} userFirstName={item.user.first_name} userLastName={item.user.last_name} />
+          <TouchableOpacity onPress={() => navigation.navigate('EventImageShow', { pictureId: item.id, eventId: id })}>
+            <EventImageCard 
+              pictureUrl={item.picture.url} 
+              pictureDescription={item.description} 
+              userFirstName={item.user.first_name} 
+              userLastName={item.user.last_name} 
+            />
+          </TouchableOpacity>
           )}
           keyExtractor={(item) => item.id.toString()}
         />
       </View>
-
+  
+      
       <TouchableOpacity style={styles.generateVideoButton} onPress={handleGenerateVideo}>
         <Text style={styles.generateVideoText}>Generate Video</Text>
       </TouchableOpacity>
