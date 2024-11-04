@@ -25,7 +25,7 @@ const EventsShow = () => {
       .then(response => {
         setEvent(response.data);
         setVideoUrl(`${NGROK_URL}${response.data.video_url_path}`);
-        console.log(`${NGROK_URL}${response.data.video_url_path}`);
+        console.log(response.data);
         setUsers(response.data.users);
         setEventPictures(response.data.event_pictures);
       })
@@ -75,10 +75,12 @@ const EventsShow = () => {
     }
   };
 
-
   if (!event) {
     return <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />;
   }
+
+  // Verifica si la fecha del evento es anterior a la fecha actual
+  const isEventPast = new Date(event.date) < new Date();
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -149,7 +151,6 @@ const EventsShow = () => {
         />
       </View>
   
-      
       {videoUrl && videoUrl.endsWith('.mp4') ? (
         <Video
           source={{ uri: videoUrl }}
@@ -161,12 +162,12 @@ const EventsShow = () => {
         <TouchableOpacity 
           style={styles.generateVideoButton} 
           onPress={handleGenerateVideo} 
-          disabled={videoLoading}
+          disabled={!isEventPast || videoLoading}
         >
           {videoLoading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
-            <Text style={styles.generateVideoText}>Generate Video</Text>
+            <Text style={styles.generateVideoText}>Resumen</Text>
           )}
         </TouchableOpacity>
       )}

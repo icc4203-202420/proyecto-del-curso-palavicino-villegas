@@ -11,9 +11,10 @@ class API::V1::EventPicturesController < ApplicationController
   end
 
   def show
-    @event_picture =  EventPicture.find(params[:id])
+    @event_picture = EventPicture.find(params[:id])
     if @event_picture
-      render json: { event_picture: @event_picture }, status: :ok
+      tagged_friends_data = User.where(id: @event_picture.tagged_friends).select(:id, :first_name, :last_name, :handle)
+      render json: { event_picture: @event_picture, tagged_friends: tagged_friends_data }, status: :ok
     else
       render json: { error: "Event_picture not found" }, status: :not_found
     end
