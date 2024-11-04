@@ -7,8 +7,11 @@ export default function NotificationListener() {
 
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const { screen } = response.notification.request.content.data;
-      if (screen) {
+      const { screen, event_id } = response.notification.request.content.data;
+      
+      if (screen === 'EventsShow' && event_id) {
+        navigation.navigate(screen, { id: event_id }); 
+      } else if (screen) {
         navigation.navigate(screen); 
       }
     });
