@@ -38,7 +38,7 @@ async function registerForPushNotificationsAsync() {
     return;
   }
 
-  // Ver que el pporjectID sea el mismo
+  // Ver que el projectID sea el mismo
   token = (await Notifications.getExpoPushTokenAsync({ projectId: 'c798aa01-2316-451f-984f-2cc7f0edfefb' })).data;
 
   return token;

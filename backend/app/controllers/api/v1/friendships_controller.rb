@@ -65,7 +65,7 @@ class API::V1::FriendshipsController < ApplicationController
 
         notification_sent = PushNotificationService.send_notification(
           to: friend.expo_push_token,
-          title: "¡Nueva solicitud de amistad!",
+          title: "¡Nueva amistad!",
           body: "#{@user.handle} te ha agregado como amigo.",
           data: { screen: "Home" }
         )
