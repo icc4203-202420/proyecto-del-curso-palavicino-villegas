@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator, StyleSheet, Alert, FlatList } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -43,6 +43,12 @@ const EventImageForm = () => {
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
+  };
+
+  const toggleTaggedFriend = (friendId) => {
+    setTaggedFriends((prevTaggedFriends) =>
+      prevTaggedFriends.includes(friendId) ? prevTaggedFriends.filter(id => id !== friendId) : [...prevTaggedFriends, friendId]
+    );
   };
 
   const uploadImage = async () => {
@@ -99,6 +105,21 @@ const EventImageForm = () => {
         onChangeText={setDescription}
       />
 
+      <Text style={styles.title}>Tag Friends:</Text>
+      <FlatList
+        data={friends}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.friendItem}
+            onPress={() => toggleTaggedFriend(item.id)}
+          >
+            <Text style={styles.friendName}>{item.handle}</Text>
+            <Text>{taggedFriends.includes(item.id) ? '✅' : '⬜️'}</Text>
+          </TouchableOpacity>
+        )}
+      />
+
       <TouchableOpacity
         style={[styles.uploadButton, uploading && styles.buttonDisabled]}
         onPress={uploadImage}
@@ -120,10 +141,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
   },
   title: { 
-    fontSize: 22, 
+    fontSize: 18, 
     fontWeight: 'bold', 
     color: '#333', 
-    marginBottom: 20 
+    marginVertical: 10 
   },
   imageContainer: {
     width: 140,
@@ -158,6 +179,19 @@ const styles = StyleSheet.create({
     marginBottom: 20, 
     fontSize: 16,
     color: '#333'
+  },
+  friendItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    width: '100%',
+  },
+  friendName: { 
+    fontSize: 16, 
+    color: '#333' 
   },
   uploadButton: { 
     backgroundColor: '#FF8603', 
