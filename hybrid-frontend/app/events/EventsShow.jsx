@@ -4,7 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { NGROK_URL } from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; 
 import barsHomeImage from '../../assets/bars_home.png';
 import EventImageCard from './EventImageCard';
 
@@ -35,7 +35,7 @@ const EventsShow = () => {
   const handleCheckIn = async () => {
     setCheckingIn(true);
     try {
-      const userId = await AsyncStorage.getItem('CURRENT_USER_ID');
+      const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
       await axios.post(`${NGROK_URL}/api/v1/attendances`, {
         user_id: parseInt(userId, 10),
         event_id: id,
@@ -50,7 +50,7 @@ const EventsShow = () => {
   };
 
   const handleAddPhoto = async () => {
-    const userId = await AsyncStorage.getItem('CURRENT_USER_ID');
+    const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
