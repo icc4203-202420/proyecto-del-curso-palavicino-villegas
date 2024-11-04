@@ -66,7 +66,9 @@ const EventImageForm = () => {
       formData.append("event_picture[event_id]", eventId);
       formData.append("event_picture[user_id]", parseInt(userId, 10));
       formData.append("event_picture[description]", description);
-      formData.append("event_picture[tagged_friends]", JSON.stringify(taggedFriends));
+      taggedFriends.forEach((friendId) => {
+        formData.append("event_picture[tagged_friends][]", friendId);
+      });      
       formData.append("event_picture[picture]", {
         uri: image,
         type: `image/${fileType}`,
