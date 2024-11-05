@@ -1,6 +1,15 @@
 # DEMO Entrega 2.1:
 https://youtu.be/EoQIT4K8740
 
+# DEMO Entrega 2.2:
+https://youtu.be/Eb0xCYOWUpI
+
+Por favor, ejecutar `bin/rails db:drop db:create db:migrate db:seed`, asegurarse de que `backend/public/event_images` y `backend/public/videos` estén vacíos y que las imágenes subidas sean `jpg`. 
+
+Además, en caso de error por el `proyect_id` de Expo usar:
+
+    - username: franco17
+    - password: wixjyt-3vYcma-zyjxuv
 
 # Apple OS
 ### Modificar las rutas de la API para pruebas con iOS Bundled:
