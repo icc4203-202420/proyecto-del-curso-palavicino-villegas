@@ -25,7 +25,7 @@ const EventsShow = () => {
       .then(response => {
         setEvent(response.data);
         setVideoUrl(`${NGROK_URL}${response.data.video_url_path}`);
-        console.log(response.data);
+        // console.log(response.data);
         setUsers(response.data.users);
         setEventPictures(response.data.event_pictures);
       })
