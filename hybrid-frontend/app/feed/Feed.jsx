@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { NGROK_URL } from '@env';
@@ -28,7 +28,7 @@ const Feed = () => {
             if (userId) {
                 try {
                     const response = await axios.get(`${NGROK_URL}/api/v1/users/${userId}`);
-                    setFriends(response.data.friends);
+                    setFriends(response.data.friends); 
                     // console.log(response.data.friends);
                 } catch (error) {
                     console.error('Error fetching user data:', error);
@@ -46,11 +46,11 @@ const Feed = () => {
             try {
                 const response = await axios.get(`${NGROK_URL}/api/v1/event_pictures`);
                 const allPictures = response.data.event_pictures;
-    
+
                 const filteredPictures = allPictures
                     .filter(picture => friends.some(friend => friend.id === picture.user_id))
                     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    
+
                 setFriendsPictures(filteredPictures);
             } catch (error) {
                 console.error('Error fetching pictures data:', error);
@@ -65,11 +65,11 @@ const Feed = () => {
             try {
                 const response = await axios.get(`${NGROK_URL}/api/v1/reviews`);
                 const allReviews = response.data.reviews;
-    
+
                 const filteredReviews = allReviews
                     .filter(review => friends.some(friend => friend.id === review.user_id))
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); 
-    
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
                 setFriendsReviews(filteredReviews);
             } catch (error) {
                 console.error('Error fetching reviews data:', error);
@@ -84,36 +84,28 @@ const Feed = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Feed</Text>
 
-            <FlatList
-                data={friendsReviews}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <BeerReviewCard review={item} />
-                )}
-            />
+            <ScrollView>
+                {friendsReviews.map((item) => (
+                    <BeerReviewCard key={item.id} review={item} />
+                ))}
 
-            <FlatList
-                data={friendsPictures}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => {
-                    console.log('Rendering item:', item);
-
-                    return (
-                        <EventImageCard
-                            pictureUrl={item.url}
-                            pictureDescription={item.description}
-                            userFirstName={item.user.first_name}
-                            userLastName={item.user.last_name}
-                        />
-                    );
-                }}
-            />
+                {friendsPictures.map((item) => (
+                    <EventImageCard
+                        key={item.id}
+                        pictureUrl={item.url}
+                        pictureDescription={item.description}
+                        userFirstName={item.user.first_name}
+                        userLastName={item.user.last_name}
+                    />
+                ))}
+            </ScrollView>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         padding: 10,
     },
     title: {
