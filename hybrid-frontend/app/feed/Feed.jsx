@@ -10,15 +10,12 @@ import EventImageCard from '../events/EventImageCard';
 {/*
 TO DO:
   - Navigate with picture/review card to the 'show view'
-  - Sort by 'created_at' date
   - Add filters
-  - Wrap the data in a single vertical scroll
 */}
 
 const Feed = () => {
     const [friends, setFriends] = useState([]);
-    const [friendsPictures, setFriendsPictures] = useState([]);
-    const [friendsReviews, setFriendsReviews] = useState([]);
+    const [pictureReviewsFeed, setpictureReviewsFeed] = useState([]);
     const navigation = useNavigation();
 
     // Friends
@@ -28,7 +25,7 @@ const Feed = () => {
             if (userId) {
                 try {
                     const response = await axios.get(`${NGROK_URL}/api/v1/users/${userId}`);
-                    setFriends(response.data.friends); 
+                    setFriends(response.data.friends);
                     // console.log(response.data.friends);
                 } catch (error) {
                     console.error('Error fetching user data:', error);
@@ -40,64 +37,69 @@ const Feed = () => {
         fetchFriends();
     }, []);
 
-    // Pictures
+    // Pictures and Reviews
     useEffect(() => {
-        const fetchEventPictures = async () => {
+        const fetchPictureReviewsFeed = async () => {
             try {
-                const response = await axios.get(`${NGROK_URL}/api/v1/event_pictures`);
-                const allPictures = response.data.event_pictures;
+                // Pictures
+                const picturesResponse = await axios.get(`${NGROK_URL}/api/v1/event_pictures`);
+                const allPictures = picturesResponse.data.event_pictures.filter(picture =>
+                    friends.some(friend => friend.id === picture.user_id)
+                );
 
-                const filteredPictures = allPictures
-                    .filter(picture => friends.some(friend => friend.id === picture.user_id))
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                // Reviews
+                const reviewsResponse = await axios.get(`${NGROK_URL}/api/v1/reviews`);
+                const allReviews = reviewsResponse.data.reviews.filter(review =>
+                    friends.some(friend => friend.id === review.user_id)
+                );
 
-                setFriendsPictures(filteredPictures);
+                // usefull for each card component (BeerReviewCard or EventImageCard)
+                const friendsPictures = allPictures.map(picture => ({
+                    ...picture,
+                    type: 'picture',
+                }));
+
+                const friendsReviews = allReviews.map(review => ({
+                    ...review,
+                    type: 'review',
+                }));
+
+                // sort by created_at (pictures and reviews)
+                const combinedSort = [...friendsPictures, ...friendsReviews].sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                );
+
+                setpictureReviewsFeed(combinedSort);
             } catch (error) {
-                console.error('Error fetching pictures data:', error);
+                console.error('Error fetching feed data:', error);
             }
         };
-        fetchEventPictures();
+
+        fetchPictureReviewsFeed();
+
     }, [friends]);
-
-    // Reviews
-    useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-                const response = await axios.get(`${NGROK_URL}/api/v1/reviews`);
-                const allReviews = response.data.reviews;
-
-                const filteredReviews = allReviews
-                    .filter(review => friends.some(friend => friend.id === review.user_id))
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-                setFriendsReviews(filteredReviews);
-            } catch (error) {
-                console.error('Error fetching reviews data:', error);
-            }
-        };
-        fetchReviews();
-    }, [friends]);
-
-    console.log(friendsPictures)
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Feed</Text>
 
             <ScrollView>
-                {friendsReviews.map((item) => (
-                    <BeerReviewCard key={item.id} review={item} />
-                ))}
-
-                {friendsPictures.map((item) => (
-                    <EventImageCard
-                        key={item.id}
-                        pictureUrl={item.url}
-                        pictureDescription={item.description}
-                        userFirstName={item.user.first_name}
-                        userLastName={item.user.last_name}
-                    />
-                ))}
+                {pictureReviewsFeed.map((item) => {
+                    if (item.type === 'review') {
+                        return <BeerReviewCard key={item.id} review={item} />;
+                    } else if (item.type === 'picture') {
+                        return (
+                            <EventImageCard
+                                key={item.id}
+                                pictureUrl={item.url}
+                                pictureDescription={item.description}
+                                userFirstName={item.user.first_name}
+                                userLastName={item.user.last_name}
+                            />
+                        );
+                    }
+                    return null;
+                })}
             </ScrollView>
         </View>
     );
