@@ -4,6 +4,25 @@ class API::V1::EventPicturesController < ApplicationController
 
     if @event_picture.save
       notify_tagged_friends(@event_picture) if @event_picture.tagged_friends.present?
+
+      ActionCable.server.broadcast "feed_channel_#{@event_picture.user.id}", {
+      type: 'new_event_picture',
+      data: {
+        id: @event_picture.id,
+        description: @event_picture.description,
+        picture_url: url_for(@event_picture.picture),
+        tagged_friends: @event_picture.tagged_friends,
+        event: {
+          id: @event_picture.event.id,
+          name: @event_picture.event.name
+        },
+        user: {
+          id: @event_picture.user.id,
+          handle: @event_picture.user.handle
+        },
+        created_at: @event_picture.created_at
+      }
+    }
       render json: { message: 'Picture uploaded successfully', event_picture: @event_picture }, status: :created
     else
       render json: { errors: @event_picture.errors.full_messages }, status: :unprocessable_entity
