@@ -6,7 +6,7 @@ class EventPicture < ApplicationRecord
   after_commit :save_picture_to_public_directory, on: [:create]
 
   def url
-    picture.attached? ? Rails.application.routes.url_helpers.rails_blob_url(picture, only_path: true) : nil
+    picture.attached? ? Rails.application.routes.url_helpers.rails_blob_url(picture, host: 'https://761d-190-215-138-27.ngrok-free.app') : nil
   end
 
   private

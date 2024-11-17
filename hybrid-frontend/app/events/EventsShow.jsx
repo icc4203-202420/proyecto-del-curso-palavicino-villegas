@@ -81,6 +81,7 @@ const EventsShow = () => {
 
   // Verifica si la fecha del evento es anterior a la fecha actual
   const isEventPast = new Date(event.date) < new Date();
+  console.log(eventPictures);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>

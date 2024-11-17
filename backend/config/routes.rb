@@ -49,13 +49,17 @@ Rails.application.routes.draw do
         resources :friendships, param: :friend_id, only: [:index, :create, :show, :update]
       end
 
-      resources :reviews, only: [:index, :show, :create, :update, :destroy]
+      resources :reviews do
+        get 'feed_reviews', to: 'reviews#feed_reviews'
+      end
       resources :countries, only: [:index]
       resources :events do
         resources :event_pictures, only: [:new, :create]
       end
 
-      resources :event_pictures
+      resources :event_pictures do
+        get 'feed_pictures', to: 'event_pictures#feed_pictures'
+      end
       resources :attendances
     end
   end
