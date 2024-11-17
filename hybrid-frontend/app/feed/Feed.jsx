@@ -46,13 +46,12 @@ const Feed = () => {
             try {
                 const response = await axios.get(`${NGROK_URL}/api/v1/event_pictures`);
                 const allPictures = response.data.event_pictures;
-                
-                const filteredPictures = allPictures.filter(picture => 
-                    friends.some(friend => friend.id === picture.user_id)
-                );
-
+    
+                const filteredPictures = allPictures
+                    .filter(picture => friends.some(friend => friend.id === picture.user_id))
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    
                 setFriendsPictures(filteredPictures);
-                // console.log(filteredPictures);
             } catch (error) {
                 console.error('Error fetching pictures data:', error);
             }
@@ -66,13 +65,12 @@ const Feed = () => {
             try {
                 const response = await axios.get(`${NGROK_URL}/api/v1/reviews`);
                 const allReviews = response.data.reviews;
-
-                const filteredReviews = allReviews.filter(review => 
-                    friends.some(friend => friend.id === review.user_id)
-                );
-
+    
+                const filteredReviews = allReviews
+                    .filter(review => friends.some(friend => friend.id === review.user_id))
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); 
+    
                 setFriendsReviews(filteredReviews);
-                // console.log(filteredReviews);
             } catch (error) {
                 console.error('Error fetching reviews data:', error);
             }
@@ -98,7 +96,7 @@ const Feed = () => {
                 data={friendsPictures}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => {
-                    // console.log(item.user.first_name);
+                    console.log('Rendering item:', item);
 
                     return (
                         <EventImageCard
