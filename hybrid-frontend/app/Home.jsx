@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import BarsHomeCard from './bars/BarsHomeCard';
 import BeersHomeCard from './beers/BeersHomeCard';
 import SocialHomeCard from './social/SocialHomeCard';
+import FeedHomeCard from './feed/FeedHomeCard';
 import pintpalLogo from '../assets/pintpal-logo.png';
 
 const Home = () => {
@@ -20,7 +21,9 @@ const Home = () => {
         <BarsHomeCard />
         <BeersHomeCard />
         <SocialHomeCard />
+        <FeedHomeCard />
       </View>
+      
       <View style={styles.logout}>
         <Button title="Logout" onPress={() => navigation.navigate('Logout')} color="#FF8603" />
       </View>

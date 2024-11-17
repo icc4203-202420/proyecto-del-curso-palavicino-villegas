@@ -32,6 +32,8 @@ import EventImageShow from './app/events/EventImageShow';
 import SocialIndex from './app/social/SocialIndex';
 import SocialShow from './app/social/SocialShow';
 
+// Feed
+import Feed from './app/feed/Feed'
 
 const Stack = createStackNavigator();
 
@@ -68,6 +70,9 @@ export default function App() {
         <Stack.Screen name="Social" component={SocialIndex} options={{ title: 'Social' }} />
         <Stack.Screen name="SocialShow" component={SocialShow} options={{ title: 'User Details' }} />
 
+        {/* Feed views */}
+        <Stack.Screen name="Feed" component={Feed} />      
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

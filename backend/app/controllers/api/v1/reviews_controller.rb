@@ -5,6 +5,10 @@ class API::V1::ReviewsController < ApplicationController
   before_action :set_beer, only: [:index], if: -> { params[:beer_id].present? }
 
 
+  def feed_reviews
+
+  end
+
   def index
     if @user
       @reviews = Review.where(user: @user)
