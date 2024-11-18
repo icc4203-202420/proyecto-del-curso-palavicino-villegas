@@ -152,14 +152,16 @@ const Feed = () => {
 
             <ScrollView>
                 {filteredFeed.map((item, index) => {
-                    const uniqueKey = `${item.id || index}-${item.type}`; 
+                    const uniqueKey = `${item.id || index}-${item.type}`;
 
                     if (item.type === 'review') {
                         return (
                             <View key={uniqueKey} style={styles.feedItem}>
-                                <Text style={styles.caption}>
-                                    @{item.user?.handle || item.user?.first_name || 'unknown'} reviewed the beer "{item.beer?.name || 'unknown'}" {formatDistanceToNow(new Date(item.created_at))} ago.
-                                </Text>
+                                <View style={styles.chatBubble}>
+                                    <Text style={styles.caption}>
+                                        @{item.user?.handle || item.user?.first_name || 'unknown'} reviewed the beer "{item.beer?.name || 'unknown'}" {formatDistanceToNow(new Date(item.created_at))} ago.
+                                    </Text>
+                                </View>
                                 <TouchableOpacity onPress={() => navigation.navigate('BeersShow', { id: item.beer_id })}>
                                     <BeerReviewCard review={item} />
                                 </TouchableOpacity>
@@ -168,9 +170,11 @@ const Feed = () => {
                     } else if (item.type === 'picture') {
                         return (
                             <View key={uniqueKey} style={styles.feedItem}>
-                                <Text style={styles.caption}>
-                                    @{item.user?.handle || item.user?.first_name || 'unknown'} posted an image at the event "{item.event?.name || 'unknown'}" from the bar {item.event.bar?.name || 'unknown'} {formatDistanceToNow(new Date(item.created_at))} ago.
-                                </Text>
+                                <View style={styles.chatBubble}>
+                                    <Text style={styles.caption}>
+                                        @{item.user?.handle || item.user?.first_name || 'unknown'} posted an image at the event "{item.event?.name || 'unknown'}" from the bar {item.event.bar?.name || 'unknown'} {formatDistanceToNow(new Date(item.created_at))} ago.
+                                    </Text>
+                                </View>
                                 <TouchableOpacity onPress={() => navigation.navigate('EventsShow', { id: item.event_id })}>
                                     <EventImageCard
                                         pictureUrl={item.url}
@@ -230,6 +234,15 @@ const styles = StyleSheet.create({
         color: 'black',
         marginBottom: 5,
     },
+    chatBubble: {
+        backgroundColor: 'white', 
+        borderRadius: 10, 
+        padding: 10, 
+        marginBottom: 10, 
+        alignSelf: 'flex-start', 
+        maxWidth: '80%', 
+        position: 'relative', 
+    }
 });
 
 export default Feed;
