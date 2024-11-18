@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Button, TextInput } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import Collapsible from 'react-native-collapsible';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { NGROK_URL } from '@env';
@@ -14,6 +15,7 @@ const Feed = () => {
     const [filteredFeed, setFilteredFeed] = useState([]);
     const [filterType, setFilterType] = useState(null);
     const [filterValue, setFilterValue] = useState('');
+    const [isCollapsed, setIsCollapsed] = useState(true); 
     const navigation = useNavigation();
 
     // Friends
@@ -24,7 +26,6 @@ const Feed = () => {
                 try {
                     const response = await axios.get(`${NGROK_URL}/api/v1/users/${userId}`);
                     setFriends(response.data.friends);
-                    // console.log(response.data.friends);
                 } catch (error) {
                     console.error('Error fetching user data:', error);
                 }
@@ -40,14 +41,11 @@ const Feed = () => {
         const fetchPictureReviewsFeed = async () => {
             try {
                 const picturesResponse = await axios.get(`${NGROK_URL}/api/v1/event_pictures`);
-                // console.log(picturesResponse.data);
                 const allPictures = picturesResponse.data.filter(picture =>
                     friends.some(friend => friend.id === picture.user_id)
                 );
 
                 const reviewsResponse = await axios.get(`${NGROK_URL}/api/v1/reviews`);
-                // console.log(reviewsResponse.data.reviews);
-
                 const allReviews = reviewsResponse.data.reviews.filter(review =>
                     friends.some(friend => friend.id === review.user_id)
                 );
@@ -82,10 +80,9 @@ const Feed = () => {
             setFilteredFeed(pictureReviewsFeed);
             return;
         }
-    
+
         const filtered = pictureReviewsFeed.filter(item => {
             const searchValue = filterValue.toLowerCase();
-            console.log(item);
             if (filterType === 'friend') {
                 const user = item.user;
                 return (
@@ -100,48 +97,57 @@ const Feed = () => {
             } else if (filterType === 'beer') {
                 return item.type === 'review' && item.beer?.name?.toLowerCase().includes(searchValue);
             }
-    
+
             return true;
         });
-    
+
         setFilteredFeed(filtered);
     }, [filterType, filterValue, pictureReviewsFeed]);
-    
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Feed</Text>
 
-            <View style={styles.filterContainer}>
-                <Picker
-                    selectedValue={filterType}
-                    onValueChange={(value) => setFilterType(value)}
-                    style={styles.picker}
-                >
-                    <Picker.Item label="Select Filter" value={null} />
-                    <Picker.Item label="Friend" value="friend" />
-                    <Picker.Item label="Bar" value="bar" />
-                    <Picker.Item label="Country" value="country" />
-                    <Picker.Item label="Beer" value="beer" />
-                </Picker>
+            <TouchableOpacity
+                style={styles.collapseButton}
+                onPress={() => setIsCollapsed(!isCollapsed)}
+            >
+                <Text style={styles.collapseButtonText}>
+                    {isCollapsed ? 'Add Filter' : 'Hide Filter'}
+                </Text>
+            </TouchableOpacity>
 
-                {filterType && (
-                    <TextInput
-                        style={styles.input}
-                        placeholder={`Enter ${filterType}`}
-                        value={filterValue}
-                        onChangeText={setFilterValue}
+
+            <Collapsible collapsed={isCollapsed}>
+                <View style={styles.filterContainer}>
+                    <SegmentedControl
+                        values={['Friend', 'Bar', 'Country', 'Beer']}
+                        selectedIndex={filterType ? ['friend', 'bar', 'country', 'beer'].indexOf(filterType) : -1}
+                        onChange={(event) => {
+                            const index = event.nativeEvent.selectedSegmentIndex;
+                            const filters = ['friend', 'bar', 'country', 'beer'];
+                            setFilterType(index >= 0 ? filters[index] : null);
+                        }}
+                        style={styles.segmentedControl}
                     />
-                )}
 
-                <Button
-                    title="Clear Filter"
-                    onPress={() => {
-                        setFilterType(null);
-                        setFilterValue('');
-                    }}
-                />
-            </View>
+                    {filterType && (
+                        <TextInput
+                            style={styles.input}
+                            placeholder={`Enter ${filterType}`}
+                            value={filterValue}
+                            onChangeText={setFilterValue}
+                        />
+                    )}
+
+                    <Button
+                        title="Clear Filter"
+                        onPress={() => {
+                            setFilterType(null);
+                            setFilterValue('');
+                        }}
+                    />
+                </View>
+            </Collapsible>
 
             <ScrollView>
                 {filteredFeed.map((item) => {
@@ -180,12 +186,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
     },
+    collapseButton: {
+        marginBottom: 10,
+        backgroundColor: 'offwhite',
+        padding: 10,
+        borderRadius: 5,
+    },
+    collapseButtonText: {
+        fontSize: 16,
+        textAlign: 'center',
+    },
     filterContainer: {
         marginBottom: 20,
     },
-    picker: {
-        height: 50,
-        width: '100%',
+    segmentedControl: {
+        marginBottom: 10,
     },
     input: {
         height: 40,
