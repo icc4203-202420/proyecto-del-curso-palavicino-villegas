@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { NGROK_URL } from '@env';
@@ -81,21 +81,26 @@ const Feed = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Feed</Text>
-
             <ScrollView>
                 {pictureReviewsFeed.map((item) => {
                     if (item.type === 'review') {
-                        return <BeerReviewCard key={item.id} review={item} />;
+                        return (
+                            <TouchableOpacity key={item.id} onPress={() => navigation.navigate('BeersShow', { id: item.beer_id })}>
+                                <BeerReviewCard review={item} />
+                            </TouchableOpacity>
+                        );                        
+
                     } else if (item.type === 'picture') {
                         return (
-                            <EventImageCard
-                                key={item.id}
-                                pictureUrl={item.url}
-                                pictureDescription={item.description}
-                                userFirstName={item.user.first_name}
-                                userLastName={item.user.last_name}
-                            />
+                            <TouchableOpacity onPress={() => navigation.navigate('EventsShow', { id: item.event_id })}>
+                                <EventImageCard
+                                    key={item.id}
+                                    pictureUrl={item.url}
+                                    pictureDescription={item.description}
+                                    userFirstName={item.user.first_name}
+                                    userLastName={item.user.last_name}
+                                />
+                            </TouchableOpacity>
                         );
                     }
                     return null;
