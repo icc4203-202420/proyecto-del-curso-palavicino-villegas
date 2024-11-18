@@ -153,20 +153,30 @@ const Feed = () => {
                 {filteredFeed.map((item) => {
                     if (item.type === 'review') {
                         return (
-                            <TouchableOpacity key={item.id} onPress={() => navigation.navigate('BeersShow', { id: item.beer_id })}>
-                                <BeerReviewCard review={item} />
-                            </TouchableOpacity>
+                            <View key={item.id} style={styles.feedItem}>
+                                <Text style={styles.caption}>
+                                    @{item.user?.handle || item.user?.first_name || 'desconocido'} hizo una review de la cerveza "{item.beer?.name || 'desconocida'}".
+                                </Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('BeersShow', { id: item.beer_id })}>
+                                    <BeerReviewCard review={item} />
+                                </TouchableOpacity>
+                            </View>
                         );
                     } else if (item.type === 'picture') {
                         return (
-                            <TouchableOpacity key={item.id} onPress={() => navigation.navigate('EventsShow', { id: item.event_id })}>
-                                <EventImageCard
-                                    pictureUrl={item.url}
-                                    pictureDescription={item.description}
-                                    userFirstName={item.user.first_name}
-                                    userLastName={item.user.last_name}
-                                />
-                            </TouchableOpacity>
+                            <View key={item.id} style={styles.feedItem}>
+                                <Text style={styles.caption}>
+                                    @{item.user?.handle || item.user?.first_name || 'desconocido'} publicó una imagen en el evento "{item.event?.name || 'desconocido'}" del bar {item.event.bar?.name || 'desconocido'}.
+                                </Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('EventsShow', { id: item.event_id })}>
+                                    <EventImageCard
+                                        pictureUrl={item.url}
+                                        pictureDescription={item.description}
+                                        userFirstName={item.user.first_name}
+                                        userLastName={item.user.last_name}
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         );
                     }
                     return null;
@@ -208,6 +218,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 10,
         paddingHorizontal: 8,
+    },
+    feedItem: {
+        marginBottom: 20,
+    },
+    caption: {
+        fontSize: 14,
+        color: 'black',
+        marginBottom: 5,
     },
 });
 
