@@ -8,6 +8,7 @@ import { NGROK_URL } from '@env';
 import * as SecureStore from 'expo-secure-store';
 import BeerReviewCard from '../beers/BeerReviewCard';
 import EventImageCard from '../events/EventImageCard';
+import { formatDistanceToNow } from 'date-fns';
 
 const Feed = () => {
     const [friends, setFriends] = useState([]);
@@ -150,12 +151,14 @@ const Feed = () => {
             </Collapsible>
 
             <ScrollView>
-                {filteredFeed.map((item) => {
+                {filteredFeed.map((item, index) => {
+                    const uniqueKey = `${item.id || index}-${item.type}`; 
+
                     if (item.type === 'review') {
                         return (
-                            <View key={item.id} style={styles.feedItem}>
+                            <View key={uniqueKey} style={styles.feedItem}>
                                 <Text style={styles.caption}>
-                                    @{item.user?.handle || item.user?.first_name || 'desconocido'} hizo una review de la cerveza "{item.beer?.name || 'desconocida'}".
+                                    @{item.user?.handle || item.user?.first_name || 'unknown'} reviewed the beer "{item.beer?.name || 'unknown'}" {formatDistanceToNow(new Date(item.created_at))} ago.
                                 </Text>
                                 <TouchableOpacity onPress={() => navigation.navigate('BeersShow', { id: item.beer_id })}>
                                     <BeerReviewCard review={item} />
@@ -164,9 +167,9 @@ const Feed = () => {
                         );
                     } else if (item.type === 'picture') {
                         return (
-                            <View key={item.id} style={styles.feedItem}>
+                            <View key={uniqueKey} style={styles.feedItem}>
                                 <Text style={styles.caption}>
-                                    @{item.user?.handle || item.user?.first_name || 'desconocido'} publicó una imagen en el evento "{item.event?.name || 'desconocido'}" del bar {item.event.bar?.name || 'desconocido'}.
+                                    @{item.user?.handle || item.user?.first_name || 'unknown'} posted an image at the event "{item.event?.name || 'unknown'}" from the bar {item.event.bar?.name || 'unknown'} {formatDistanceToNow(new Date(item.created_at))} ago.
                                 </Text>
                                 <TouchableOpacity onPress={() => navigation.navigate('EventsShow', { id: item.event_id })}>
                                     <EventImageCard
