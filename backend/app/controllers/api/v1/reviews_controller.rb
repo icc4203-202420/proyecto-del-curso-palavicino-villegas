@@ -19,11 +19,15 @@ class API::V1::ReviewsController < ApplicationController
     end
 
     render json: {
-      reviews: @reviews.as_json(include: {
-        user: { only: [:handle, :email] }
-      })
+      reviews: @reviews.as_json(
+        include: {
+          user: { only: [:handle, :email] },
+          beer: { only: [:name] }
+        }
+      )
     }, status: :ok
   end
+
 
 
   def show

@@ -10,11 +10,30 @@ class API::V1::EventPicturesController < ApplicationController
     end
   end
 
-  def index
-    @event_pictures = EventPicture.all
+def index
+  @event_pictures = EventPicture.includes(event: { bar: { address: :country } })
 
-    render json: { event_pictures: @event_pictures.as_json(include: { user: { only: [:id, :first_name, :last_name, :handle] } }, methods: :url) }, status: :ok
-  end
+  render json: @event_pictures.as_json(
+    include: {
+      user: { only: [:id, :first_name, :last_name, :handle] },
+      event: {
+        include: {
+          bar: {
+            only: [:name],
+            include: {
+              address: {
+                include: {
+                  country: { only: [:name] }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    methods: :url
+  ), status: :ok
+end
 
   def show
     @event_picture = EventPicture.find(params[:id])
