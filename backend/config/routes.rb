@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount ActionCable.server, at: '/cable'
   # devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   get 'current_user', to: 'current_user#index'

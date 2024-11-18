@@ -3,7 +3,12 @@ class API::V1::EventPicturesController < ApplicationController
     @event_picture = EventPicture.new(event_picture_params)
 
     if @event_picture.save
+      # Notificar a los amigos etiquetados
       notify_tagged_friends(@event_picture) if @event_picture.tagged_friends.present?
+
+      # Transmitir la imagen creada a través del WebSocket
+      broadcast_event_picture(@event_picture)
+
       render json: { message: 'Picture uploaded successfully', event_picture: @event_picture }, status: :created
     else
       render json: { errors: @event_picture.errors.full_messages }, status: :unprocessable_entity
@@ -13,19 +18,24 @@ class API::V1::EventPicturesController < ApplicationController
   def index
     @event_pictures = EventPicture.all
 
-    render json: { event_pictures: @event_pictures.as_json(include: { user: { only: [:id, :first_name, :last_name, :handle] } }, methods: :url) }, status: :ok
+    render json: {
+      event_pictures: @event_pictures.as_json(
+        include: { user: { only: [:id, :first_name, :last_name, :handle] } },
+        methods: :url
+      )
+    }, status: :ok
   end
 
   def show
     @event_picture = EventPicture.find(params[:id])
     if @event_picture
-      tagged_friends_data = User.where(id: @event_picture.tagged_friends).select(:id, :first_name, :last_name, :handle)
+      tagged_friends_data = User.where(id: @event_picture.tagged_friends)
+                                .select(:id, :first_name, :last_name, :handle)
       render json: { event_picture: @event_picture, tagged_friends: tagged_friends_data }, status: :ok
     else
       render json: { error: "Event_picture not found" }, status: :not_found
     end
   end
-
 
   private
 
@@ -38,8 +48,6 @@ class API::V1::EventPicturesController < ApplicationController
     friends = User.where(id: friend_ids)
 
     friends.each do |friend|
-      notification_sent = false
-
       if friend.expo_push_token.present?
         notification_sent = PushNotificationService.send_notification(
           to: friend.expo_push_token,
@@ -57,5 +65,27 @@ class API::V1::EventPicturesController < ApplicationController
         Rails.logger.warn("El usuario #{friend.handle} no tiene expo_push_token, no se envió notificación")
       end
     end
+  end
+
+  def broadcast_event_picture(event_picture)
+    ActionCable.server.broadcast "feed_channel", {
+      type: 'new_event_picture',
+      data: {
+        id: event_picture.id,
+        description: event_picture.description,
+        picture_url: url_for(event_picture.picture),
+        tagged_friends: event_picture.tagged_friends,
+        event: {
+          id: event_picture.event.id,
+          name: event_picture.event.name
+        },
+        user: {
+          id: event_picture.user.id,
+          handle: event_picture.user.handle
+        },
+        created_at: event_picture.created_at
+      }
+    }
+    Rails.logger.info "Evento transmitido a feed_channel: EventPicture ##{event_picture.id}"
   end
 end

@@ -1,104 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import { NGROK_URL } from '@env';
-import * as SecureStore from 'expo-secure-store';
-import BeerReviewCard from '../beers/BeerReviewCard';
-import EventImageCard from '../events/EventImageCard';
-
-{/*
-TO DO:
-  - Navigate with picture/review card to the 'show view'
-  - Add filters
-*/}
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
+import { useWebSocket } from '../context/WebSocketContext';
 
 const Feed = () => {
-    const [friends, setFriends] = useState([]);
-    const [pictureReviewsFeed, setpictureReviewsFeed] = useState([]);
-    const navigation = useNavigation();
-
-    // Friends
-    useEffect(() => {
-        const fetchFriends = async () => {
-            const userId = await SecureStore.getItemAsync('CURRENT_USER_ID');
-            if (userId) {
-                try {
-                    const response = await axios.get(`${NGROK_URL}/api/v1/users/${userId}`);
-                    setFriends(response.data.friends);
-                    // console.log(response.data.friends);
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                }
-            } else {
-                console.error('User ID not found');
-            }
-        };
-        fetchFriends();
-    }, []);
-
-    // Pictures and Reviews
-    useEffect(() => {
-        const fetchPictureReviewsFeed = async () => {
-            try {
-                // Pictures
-                const picturesResponse = await axios.get(`${NGROK_URL}/api/v1/event_pictures`);
-                const allPictures = picturesResponse.data.event_pictures.filter(picture =>
-                    friends.some(friend => friend.id === picture.user_id)
-                );
-
-                // Reviews
-                const reviewsResponse = await axios.get(`${NGROK_URL}/api/v1/reviews`);
-                const allReviews = reviewsResponse.data.reviews.filter(review =>
-                    friends.some(friend => friend.id === review.user_id)
-                );
-
-                // usefull for each card component (BeerReviewCard or EventImageCard)
-                const friendsPictures = allPictures.map(picture => ({
-                    ...picture,
-                    type: 'picture',
-                }));
-
-                const friendsReviews = allReviews.map(review => ({
-                    ...review,
-                    type: 'review',
-                }));
-
-                // sort by created_at (pictures and reviews)
-                const combinedSort = [...friendsPictures, ...friendsReviews].sort(
-                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
-                );
-
-                setpictureReviewsFeed(combinedSort);
-            } catch (error) {
-                console.error('Error fetching feed data:', error);
-            }
-        };
-
-        fetchPictureReviewsFeed();
-
-    }, [friends]);
+    const { messages } = useWebSocket();
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Feed</Text>
-
-            <ScrollView>
-                {pictureReviewsFeed.map((item) => {
-                    if (item.type === 'review') {
-                        return <BeerReviewCard key={item.id} review={item} />;
-                    } else if (item.type === 'picture') {
+            <ScrollView style={styles.messageContainer}>
+                {messages.map((msg, index) => {
+                    if (msg.type === 'text') {
                         return (
-                            <EventImageCard
-                                key={item.id}
-                                pictureUrl={item.url}
-                                pictureDescription={item.description}
-                                userFirstName={item.user.first_name}
-                                userLastName={item.user.last_name}
-                            />
+                            <View key={index} style={styles.messageWrapper}>
+                                <Text style={styles.message}>{msg.content}</Text>
+                            </View>
+                        );
+                    } else if (msg.type === 'image') {
+                        return (
+                            <View key={index} style={styles.messageWrapper}>
+                                <Text style={styles.message}>{msg.content.user} subió una foto al evento {msg.content.event}</Text>
+                                <Image
+                                    source={{ uri: msg.content.picture_url }}
+                                    style={styles.image}
+                                    resizeMode="cover"
+                                />
+                                <Text style={styles.message}>{msg.content.description}</Text>
+                            </View>
                         );
                     }
-                    return null;
                 })}
             </ScrollView>
         </View>
@@ -109,11 +39,37 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
+        backgroundColor: '#f9f9f9',
     },
     title: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 10,
+        textAlign: 'center',
+    },
+    messageContainer: {
+        flex: 1,
+    },
+    messageWrapper: {
+        backgroundColor: '#fff',
+        padding: 10,
+        marginVertical: 5,
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 2,
+    },
+    message: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 5,
+    },
+    image: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
     },
 });
 
