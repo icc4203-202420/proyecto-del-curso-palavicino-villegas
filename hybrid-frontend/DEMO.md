@@ -11,6 +11,18 @@ Además, en caso de error por el `proyect_id` de Expo usar:
     - username: franco17
     - password: wixjyt-3vYcma-zyjxuv
 
+# DEMO Entrega 2.3:
+[https://youtu.be/Eb0xCYOWUpI
+](https://www.youtube.com/watch?v=kTS3v43xYfM&ab_channel=FRANCOPAOLOPALAVICINOGONZALEZ)
+
+Para esta entrega es relevante que en el método `url` del archivo `backend/event_picture.rb` se ponga la IP local con la que se accede al backend.
+```
+  def url
+    picture.attached? ? Rails.application.routes.url_helpers.rails_blob_url(picture, host: 'http://192.168.1.83:3001') : nil # Usar IP local
+  end 
+```
+En caso de usar NGROK, basta con poner el mismo valor que toma la variable `NGROK_URL` en `hybrid-frontend/.env` (más información abajo en "WINDOWS/WSL"). 
+
 # Apple OS
 ### Modificar las rutas de la API para pruebas con iOS Bundled:
 ##### En hybrid-frontend/app/beers/BeersIndex.jsx  y hybrid-frontend/app/beers/BeerShow.jsx
